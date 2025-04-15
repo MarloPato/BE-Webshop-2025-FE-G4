@@ -11,6 +11,11 @@ body {
   min-height: 100vh;
 }
 
+.product-image {
+  object-fit: cover;
+  width: 100%;
+}
+
 a {
   cursor: pointer;
 }

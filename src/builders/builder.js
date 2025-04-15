@@ -28,6 +28,7 @@ export class Builder {
     element.className = "product-card";
     element.id = product._id ? product._id : "missing-id";
     element.innerHTML = `
+        <img src="${product.imageUrl}" alt="${product.name}" />
         <h3>${product.name}</h3>
         <p>$${product.price.toFixed(2)}</p>
       `;
