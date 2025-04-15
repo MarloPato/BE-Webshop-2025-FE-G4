@@ -39,7 +39,32 @@
     </footer>
     <dialog data-sidebar>
       <button data-close-bar>X</button>
-      <section></section>
+      <section>
+        <div class="order-form hidden">
+          <button class="back-to-cart-btn">Back to Cart</button>
+          <form id="order" action="">
+            <label for="firstname">Firstname</label>
+            <input type="text" id="search" name="firstname" placeholder="Firstname" />
+            <label for="lastname">Lastname</label>
+            <input type="text" id="search" name="lastname" placeholder="Lastname" />
+            <label for="address">Address</label>
+            <input type="text" id="search" name="address" placeholder="Address" />
+            <label for="addressmumber">Address number</label>
+            <input type="text" id="search" name="addressnumber" placeholder="Address number" />
+            <label for="postalcode">Postal Code</label>
+            <input type="text" id="search" name="postalcode" placeholder="Postal Code" />
+            <label for="city">City</label>
+            <input type="text" id="search" name="city" placeholder="City" />
+            <label for="phonenumber">Phonenumber</label>
+            <input type="text" id="search" name="phonenumber" placeholder="Phonenumber" />
+            <label for="email">Email</label>
+            <input type="text" id="search" name="email" placeholder="Email" />
+            <button type="submit">Place Order</button>
+          </form>
+          <div class="cart-info"></div>
+        </div>
+        <button class="proceed-btn">Proceed to checkout</button>
+      </section>
     </dialog>
   </body>
 </html>
