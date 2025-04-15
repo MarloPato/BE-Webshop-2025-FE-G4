@@ -77,7 +77,9 @@ export class UserBuilder {
 
     let total = document.createElement("h5");
     total.textContent = `Total: $${cart.getTotal().toFixed(2)}`;
-    let div = document.querySelector(".cart-info");
+    // let div = document.querySelector(".cart-info");
+    let div = document.createElement("div");
+    div.classList.add("cart-info");
     div.append(h4, ul, total);
     if (cart.items.length > 0) {
       let clearButton = this.buildBtn("Töm varukorg", "clear-cart-btn");
