@@ -102,18 +102,23 @@ const addToCart = (product) => {
 
 const cartBtn = document.querySelector("[data-cart]");
 const closeCartBtn = document.querySelector("[data-close-bar]");
+
+let sidebar = document.querySelector("dialog[data-sidebar]");
+
+let section = sidebar.querySelector("dialog[data-sidebar] section");
+
 closeCartBtn.addEventListener("click", () => {
-  let sidebar = document.querySelector("dialog[data-sidebar]");
   sidebar.close();
 });
+
 cartBtn.addEventListener("click", () => {
-  let sidebar = document.querySelector("dialog[data-sidebar]");
-  let section = sidebar.querySelector("dialog[data-sidebar] section");
   openCart(section, cart);
   sidebar.showModal();
-  sidebar.addEventListener("close", () => {
-    section.innerHTML = "";
-  });
+  
+});
+
+sidebar.addEventListener("close", () => {
+  section.innerHTML = "";
 });
 
 document.querySelector("#closeModal").addEventListener("click", () => {
@@ -127,19 +132,19 @@ modal.addEventListener("close", () => {
 
 const proceedBtn = document.querySelector(".proceed-btn");
 const orderForm = document.querySelector(".order-form");
-const cartInfo = document.querySelector(".cart-info");
+
 
 const backtoCartBtn = document.querySelector(".back-to-cart-btn");
 backtoCartBtn.addEventListener("click", () => {
   orderForm.classList.toggle("hidden");
-  cartInfo.classList.toggle("hidden");
+
   proceedBtn.classList.toggle("hidden");
 });
 
 if (proceedBtn) {
   proceedBtn.addEventListener("click", () => {
     orderForm.classList.toggle("hidden");
-    cartInfo.classList.toggle("hidden");
+
     proceedBtn.classList.toggle("hidden");
   });
 }
@@ -200,7 +205,9 @@ order.addEventListener("submit", async (e) => {
 
     // Rensa formulär och varukorg om du vill
     order.reset();
-    localStorage.removeItem("cart");
+    localStorage.removeItem("products");
+    cart.clearCart();
+    section.innerHTML = "";
   } catch (error) {
     console.error("Fel vid order:", error);
     alert("Något gick fel. Försök igen.");
