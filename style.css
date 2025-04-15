@@ -11,6 +11,10 @@ body {
   min-height: 100vh;
 }
 
+.hidden {
+  display: none;
+}
+
 .product-image {
   object-fit: cover;
   width: 100%;
