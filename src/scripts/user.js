@@ -123,3 +123,90 @@ document.querySelector("#closeModal").addEventListener("click", () => {
 modal.addEventListener("close", () => {
   document.querySelector("#modalContent").innerHTML = "";
 });
+
+
+const proceedBtn = document.querySelector(".proceed-btn");
+const orderForm = document.querySelector(".order-form");
+const cartInfo = document.querySelector(".cart-info");
+
+const backtoCartBtn = document.querySelector(".back-to-cart-btn");
+backtoCartBtn.addEventListener("click", () => {
+  orderForm.classList.toggle("hidden");
+  cartInfo.classList.toggle("hidden");
+  proceedBtn.classList.toggle("hidden");
+});
+
+if (proceedBtn) {
+  proceedBtn.addEventListener("click", () => {
+    orderForm.classList.toggle("hidden");
+    cartInfo.classList.toggle("hidden");
+    proceedBtn.classList.toggle("hidden");
+  });
+}
+
+const order = document.getElementById("order");
+order.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = new FormData(order);
+  const data = Object.fromEntries(formData.entries());
+
+  // Kartlägg form-fält till modellen
+  const shippingAddress = {
+    street: data.address,
+    number: data.addressnumber,
+    zipCode: data.postalcode,
+    city: data.city
+  };
+
+  // Hämta och omstrukturera cart från localStorage
+  const rawCart = JSON.parse(localStorage.getItem("products")) || [];
+  console.log(rawCart);
+  const products = rawCart.map(item => ({
+    productId: item._id || item.productId, // beroende på hur det sparats
+    name: item.name,
+    price: item.price,
+    quantity: item.quantity
+  }));
+
+  const payload = {
+    firstname: data.firstname,
+    lastname: data.lastname,
+    phonenumber: data.phonenumber,
+    email: data.email,
+    shippingAddress,
+    products
+  };
+
+  console.log("Order som skickas:", payload);
+  console.log("Produkter i order:", payload.products);
+
+
+
+  try {
+    const response = await fetch("https://webshop-2025-be-g4.vercel.app/api/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) throw new Error("Kunde inte skicka ordern");
+
+    const result = await response.json();
+    console.log("Order skickad:", result);
+    alert("Tack för din beställning!");
+
+    // Rensa formulär och varukorg om du vill
+    order.reset();
+    localStorage.removeItem("cart");
+  } catch (error) {
+    console.error("Fel vid order:", error);
+    alert("Något gick fel. Försök igen.");
+  }
+});
+
+
+
+const manageProductsBtn = document.querySelector("#manageProductsBtn");

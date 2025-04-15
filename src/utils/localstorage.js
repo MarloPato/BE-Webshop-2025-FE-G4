@@ -6,15 +6,28 @@ export class LocalStorage {
   }
 
   static saveToStorage(storageName, obj) {
-    if (localStorage.getItem(storageName)) {
-      let storage = this.getStorageAsJSON(storageName);
-      storage.push(obj);
-      localStorage.setItem(storageName, JSON.stringify(storage));
-    } else {
-      let arr = [];
-      arr.push(obj);
-      localStorage.setItem(storageName, JSON.stringify(arr));
+    const product = {
+      productId: obj._id,
+      name: obj.name,
+      price: obj.price,
+      quantity: 1
     }
+
+    let storage = this.getStorageAsJSON(storageName) || [];
+
+    // Kolla om produkten redan finns i storage
+    const existingProduct = storage.find(item => item.productId === product.productId);
+
+    if (existingProduct) {
+      // Om produkten finns, öka quantity
+      existingProduct.quantity += 1;
+    } else {
+      // Annars lägg till produkten
+      storage.push(product);
+    }
+
+    localStorage.setItem(storageName, JSON.stringify(storage));
+
   }
 
   static clearStorage(storageName) {
