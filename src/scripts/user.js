@@ -190,10 +190,14 @@ order.addEventListener("submit", async (e) => {
 
 
   try {
+
+    const token = localStorage.getItem("token");
+
     const response = await fetch("https://webshop-2025-be-g4.vercel.app/api/orders", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...(token && { "Authorization": `Bearer ${token}` })
       },
       body: JSON.stringify(payload),
     });
