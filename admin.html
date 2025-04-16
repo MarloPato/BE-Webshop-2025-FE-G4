@@ -1,53 +1,88 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hakim Livs</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <!-- PAGE-SPECIFIC JAVASCRIPT -->
-    <script type="module" src="./src/scripts/index.js"></script>
-  </head>
 
-  <body>
-    <!-- HEADER -->
-    <header class="site-header">
-      <nav>
-        <a href="index.html" class="logo">Hakim Livs</a>
-        <ul class="nav-links">
-          <li><a href="index.html">Products</a></li>
-          <li><a href="login.html">Login</a></li>
-        </ul>
-      </nav>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hakim Livs</title>
+  <link rel="stylesheet" href="styleAdmin.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <!-- PAGE-SPECIFIC JAVASCRIPT -->
+  <script type="module" src="./src/scripts/index.js"></script>
+</head>
 
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-      <h1>Welcome to Hakim Livs</h1>
+<body>
 
-      <button id="manageProductsBtn">Skapa en produkt</button>
-      <dialog id="modal">
-        <button id="closeModal">X</button>
-        <div id="modalContent"></div>
-      </dialog>
-      <div id="products"></div>
-    </main>
-
-    <!-- FOOTER -->
-    <footer class="site-footer">
-      <div class="footer-content">
-        <p>&copy; 2024 Hakim Livs. All rights reserved.</p>
-        <div class="footer-links">
-          <a href="/about">About</a>
-          <a href="/contact">Contact</a>
-          <a href="/terms">Terms</a>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <div class="sidebar">
+      <a href="" class="logo">Hakim Livs</a>
+      <ul>
+        <li id="products">Products</li>
+        <li id="users">Users</li>
+        <li id="orders">Orders</li>
+      </ul>
+      <ul class="nav-links">
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </div>
+    <div class="container1">
+      <div class="container">
+        <div>
+          <div class="top-bar">
+            <label for="category">Category:</label>
+            <select name="category" id="">
+              <option value=""></option>
+            </select>
+            <button id="manageProductsBtn">Skapa en produkt</button>
+          </div>
+          <div id="productsAdmin"></div>
         </div>
       </div>
-    </footer>
-    <dialog data-sidebar>
-      <button data-close-bar>X</button>
-      <section></section>
+      <div class="container">
+        <div>
+          <div class="top-bar">
+            <label for="category">Category:</label>
+            <select name="category" id="">
+              <option value=""></option>
+            </select>
+          </div>
+          <div id="usersAdmin"></div>
+        </div>
+      </div>
+      <div class="container">
+        <div>
+          <div class="top-bar">
+            <label for="category">Category:</label>
+            <select name="category" id="">
+              <option value=""></option>
+            </select>
+          </div>
+          <div id="ordersAdmin"></div>
+        </div>
+      </div>
+    </div>
+    <dialog id="modal">
+      <button id="closeModal">X</button>
+      <div id="modalContent"></div>
     </dialog>
-  </body>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy; 2024 Hakim Livs. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </footer>
+  <dialog data-sidebar>
+    <button data-close-bar>X</button>
+    <section></section>
+  </dialog>
+</body>
+
 </html>
