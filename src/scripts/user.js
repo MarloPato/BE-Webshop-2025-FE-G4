@@ -1,5 +1,5 @@
 import { UserBuilder } from "../builders/userBuilder.js";
-import { fetchProducts } from "../utils/api.js";
+import { fetchProducts, getBaseUrl } from "../utils/api.js";
 import { Cart } from "../classes/cart.js";
 import { LocalStorage, CART_KEY } from "../utils/localstorage.js";
 import { Builder } from "../builders/builder.js";
@@ -7,7 +7,11 @@ import { auth } from "../utils/auth.js";
 import { ProductFormBuilder } from "../builders/ProductFormBuilder.js";
 import { initProductHandlers } from "../builders/productHandlers.js";
 
-document.addEventListener("DOMContentLoaded", loadProducts);
+document.addEventListener("DOMContentLoaded", () => {
+  loadProducts();
+  loadCategories();
+});
+
 const modal = document.querySelector("#modal");
 
 let cart = {};
@@ -20,38 +24,93 @@ if (LocalStorage.getStorageAsJSON(CART_KEY)) {
 cart.updateCart();
 let allProducts = [];
 
+async function loadCategories() {
+  try {
+    const response = await axios.get(`${getBaseUrl()}categories`);
+
+    if (response.status === 200) {
+      const categories = response.data;
+      const categoryFilter = document.getElementById("categoryFilter");
+
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category.name;
+        option.textContent =
+          category.name.charAt(0).toUpperCase() + category.name.slice(1); // Capitalize first letter
+        categoryFilter.appendChild(option);
+      });
+
+      categoryFilter.addEventListener("change", handleCategoryFilter);
+    }
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+}
+
+async function handleCategoryFilter() {
+  const categoryFilter = document.getElementById("categoryFilter");
+  const selectedCategory = categoryFilter.value;
+  const productsContainer = document.getElementById("products");
+  productsContainer.innerHTML = "<p>Loading products...</p>";
+
+  try {
+    let products;
+    if (selectedCategory) {
+      const response = await axios.get(
+        `${getBaseUrl()}products/bycategory?category=${selectedCategory}`
+      );
+      products = response.status === 200 ? response.data : [];
+    } else {
+      products = await fetchProducts();
+    }
+
+    allProducts = products;
+    updateProductsDisplay(products);
+  } catch (error) {
+    console.error("Error filtering products by category:", error);
+    updateProductsDisplay([]);
+  }
+}
+function updateProductsDisplay(products) {
+  const productsContainer = document.getElementById("products");
+  productsContainer.innerHTML = "";
+
+  if (products.length > 0) {
+    let productBuilder = new UserBuilder();
+    for (let x = 0; x < products.length; x++) {
+      productBuilder.buildProductCard(products[x]);
+      let productCards = productBuilder.build();
+      productsContainer.append(productCards[x]);
+    }
+  } else {
+    productsContainer.innerHTML =
+      "<p>No products available for this category.</p>";
+  }
+
+  renderProductCardEventListeners(allProducts);
+}
+
 async function loadProducts() {
   const productsContainer = document.getElementById("products");
   productsContainer.innerHTML = "<p>Loading products...</p>";
 
   try {
-
     const products = await fetchProducts();
     allProducts = products;
-    productsContainer.innerHTML = "";
-
-    if (products.length > 0) {
-      let productBuilder = new UserBuilder();
-      for (let x = 0; x < products.length; x++) {
-        productBuilder.buildProductCard(products[x]);
-        let productCards = productBuilder.build();
-        productsContainer.append(productCards[x]);
-      }
-    } else {
-      productsContainer.innerHTML = "<p>No products available.</p>";
-    }
+    updateProductsDisplay(products);
   } catch (error) {
     console.error("Error fetching products:", error);
     productsContainer.innerHTML = "<p>Failed to load products.</p>";
   }
-  renderProductCardEventListeners(allProducts);
 }
 
 const renderProductCardEventListeners = (allProducts = []) => {
   let addProductBtns = document.querySelectorAll(".add-to-cart-btn");
   addProductBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
-      let product = allProducts.find((p) => p._id == btn.id.substring(btn.id.lastIndexOf("-") + 1));
+      let product = allProducts.find(
+        (p) => p._id == btn.id.substring(btn.id.lastIndexOf("-") + 1)
+      );
       addToCart(product);
     });
   });
@@ -60,7 +119,9 @@ const renderProductCardEventListeners = (allProducts = []) => {
     product.addEventListener("click", (event) => {
       if (event.target.tagName.toLowerCase() !== "button") {
         let builder = new UserBuilder();
-        builder.buildProductCardInfo(allProducts.find((p) => p._id == product.id));
+        builder.buildProductCardInfo(
+          allProducts.find((p) => p._id == product.id)
+        );
         let productInfo = builder.build();
         let modalContent = document.querySelector("#modalContent");
         modalContent.append(productInfo[0]);
@@ -97,7 +158,6 @@ const addToCart = (product) => {
   cart.addItem(product);
   cart.updateCart();
   LocalStorage.saveToStorage(CART_KEY, product);
-  // alert(`${product.name} har lagts till i varukorgen`);
   showToast(`${product.name} har lagts till i varukorgen`);
 };
 
@@ -115,7 +175,6 @@ closeCartBtn.addEventListener("click", () => {
 cartBtn.addEventListener("click", () => {
   openCart(section, cart);
   sidebar.showModal();
-  
 });
 
 sidebar.addEventListener("close", () => {
@@ -130,10 +189,8 @@ modal.addEventListener("close", () => {
   document.querySelector("#modalContent").innerHTML = "";
 });
 
-
 const proceedBtn = document.querySelector(".proceed-btn");
 const orderForm = document.querySelector(".order-form");
-
 
 const backtoCartBtn = document.querySelector(".back-to-cart-btn");
 backtoCartBtn.addEventListener("click", () => {
@@ -162,17 +219,17 @@ order.addEventListener("submit", async (e) => {
     street: data.address,
     number: data.addressnumber,
     zipCode: data.postalcode,
-    city: data.city
+    city: data.city,
   };
 
   // Hämta och omstrukturera cart från localStorage
   const rawCart = JSON.parse(localStorage.getItem("products")) || [];
   console.log(rawCart);
-  const products = rawCart.map(item => ({
+  const products = rawCart.map((item) => ({
     productId: item._id || item.productId, // beroende på hur det sparats
     name: item.name,
     price: item.price,
-    quantity: item.quantity
+    quantity: item.quantity,
   }));
 
   const payload = {
@@ -181,22 +238,23 @@ order.addEventListener("submit", async (e) => {
     phonenumber: data.phonenumber,
     email: data.email,
     shippingAddress,
-    products
+    products,
   };
 
   console.log("Order som skickas:", payload);
   console.log("Produkter i order:", payload.products);
 
-
-
   try {
-    const response = await fetch("https://webshop-2025-be-g4.vercel.app/api/orders", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      "https://webshop-2025-be-g4.vercel.app/api/orders",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (!response.ok) throw new Error("Kunde inte skicka ordern");
 
@@ -244,8 +302,5 @@ function showToast(message) {
     }, 300);
   }, 3000);
 }
-
-
-
 
 const manageProductsBtn = document.querySelector("#manageProductsBtn");

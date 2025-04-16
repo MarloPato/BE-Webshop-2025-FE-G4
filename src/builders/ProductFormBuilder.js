@@ -1,10 +1,7 @@
-import { addProduct, updateProduct } from "../utils/api.js";
-import { Product } from "../classes/product.js";
-
-
+import { auth } from "../utils/auth.js";
+import { getBaseUrl } from "../utils/api.js";
 
 export class ProductFormBuilder {
-
   constructor(targetSelector) {
     this.targetElement = document.querySelector(targetSelector);
     this.form = document.createElement("form");
@@ -69,50 +66,104 @@ export class ProductFormBuilder {
 
   populateWithProductData(product) {
     console.log("Populating form with product data:", product);
-    this.form.querySelector("#name").value = product.name;
-    this.form.querySelector("#price").value = product.price;
-    this.form.querySelector("#description").value = product.description;
-    this.form.querySelector("#stock").value = product.stock;
+
+    this.form.querySelector("#name").value = product.name || "";
+    this.form.querySelector("#price").value = product.price || 0;
+    this.form.querySelector("#description").value = product.description || "";
+    this.form.querySelector("#stock").value = product.stock || 0;
     this.form.querySelector("#imageUrl").value = product.imageUrl || "";
 
-    // Ändra knapptexten
-    this.form.querySelector("#createProductBtn").textContent = "Uppdatera produkt";
+    // Change button text
+    this.form.querySelector("#createProductBtn").textContent =
+      "Uppdatera produkt";
 
-    // Spara produkt-ID för uppdatering
-    this.form.dataset.productId = product.id || product._id || "";
+    // Store product ID for update
+    this.form.dataset.productId = product._id || "";
     console.log("Set product ID in form dataset:", this.form.dataset.productId);
 
     return this;
   }
 
   async handleSubmit() {
-    console.log("Form submitted, dataset:", this.form.dataset);
-
-    let nameValue = document.querySelector("form#createProduct input#name").value;
-    let priceValue = Number.parseFloat(document.querySelector("form#createProduct input#price").value);
-    let descrValue = document.querySelector("form#createProduct input#description").value;
-    let stockValue = Number.parseInt(document.querySelector("form#createProduct input#stock").value);
-    let imageValue = document.querySelector("form#createProduct input#imageUrl").value || "";
-
-    let product = new Product(nameValue, priceValue, descrValue, stockValue, imageValue);
-
-    const productId = this.form.dataset.productId;
-    console.log("Product ID from dataset:", productId);
+    console.log("Form submitted");
 
     try {
+      // Get form data
+      const name = this.form.querySelector("#name").value;
+      const price = parseFloat(this.form.querySelector("#price").value);
+      const description = this.form.querySelector("#description").value;
+      const stock = parseInt(this.form.querySelector("#stock").value);
+      const imageUrl =
+        this.form.querySelector("#imageUrl").value ||
+        "https://picsum.photos/200";
+
+      // Create product object
+      const productData = {
+        name,
+        price,
+        description,
+        stock,
+        imageUrl,
+      };
+
+      console.log("Product data to submit:", productData);
+
+      // Get the token
+      const token = auth.getToken();
+
+      // Get product ID if updating
+      const productId = this.form.dataset.productId;
+
+      let response;
+
       if (productId) {
-        product._id = productId;
-        console.log(product._id);
-        await updateProduct("products", productId, product);
+        // Updating existing product
+        console.log("Updating product with ID:", productId);
+        const url = `${getBaseUrl()}products/${productId}`;
+
+        response = await axios({
+          method: "put",
+          url: url,
+          data: productData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
       } else {
-        await addProduct("products", product);
+        // Creating new product
+        console.log("Creating new product");
+        const url = `${getBaseUrl()}products`;
+
+        response = await axios({
+          method: "post",
+          url: url,
+          data: productData,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
       }
 
+      console.log("API response:", response);
+
+      // Success - close modal and reload
       modal.close();
-      location.reload();
+      window.location.reload();
     } catch (error) {
       console.error("Error saving product:", error);
-      alert("Ett fel uppstod när produkten skulle sparas");
+
+      let errorMessage = "Ett fel uppstod när produkten skulle sparas";
+
+      // Get more detailed error info if available
+      if (error.response && error.response.data) {
+        errorMessage += ": " + (error.response.data.error || error.message);
+      } else if (error.message) {
+        errorMessage += ": " + error.message;
+      }
+
+      alert(errorMessage);
     }
   }
 
