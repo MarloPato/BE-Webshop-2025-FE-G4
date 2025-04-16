@@ -1,4 +1,4 @@
-import { fetchProducts, addProduct, deleteProduct } from "../utils/api.js";
+import { fetchData, addProduct, deleteProduct } from "../utils/api.js";
 import { Product } from "../classes/product.js";
 import { Builder } from "../builders/builder.js";
 import { auth } from "../utils/auth.js";
@@ -11,6 +11,35 @@ document.addEventListener("DOMContentLoaded", () => {
   initAddProductButton();
   initProductHandlers();
 });
+
+const productsSideBarBtn = document.querySelector("#products");
+const usersSideBarBtn = document.querySelector("#users");
+const ordersSideBarBtn = document.querySelector("#orders");
+
+productsSideBarBtn.addEventListener("click", () => {
+  loadProducts();
+});
+
+
+ordersSideBarBtn.addEventListener("click", async () => {
+  const orders = await fetchData("orders");
+  console.log(orders)
+  const ordersDiv = document.getElementById("ordersAdmin");
+  orders.forEach((order) => {
+    const orderDiv = document.createElement("div");
+    orderDiv.classList.add("order");
+    orderDiv.innerHTML = `
+      <p>Order ID: ${order._id}</p>
+      <p>Totalprice: ${order.totalPrice}</p>
+      <p>Status: ${order.status}</p>
+    `;
+    ordersDiv.appendChild(orderDiv);
+  }
+  );
+});
+const usersDiv = document.getElementById("usersAdmin")
+usersSideBarBtn.addEventListener("click", () => {});
+
 
 const modal = document.querySelector("#modal");
 
@@ -43,12 +72,12 @@ function handleLogout(e) {
 let allProducts = [];
 // Function to fetch and render products
 async function loadProducts() {
-  const productsContainer = document.getElementById("products");
+  const productsContainer = document.getElementById("productsAdmin");
   productsContainer.innerHTML = "<p>Loading products...</p>";
 
   try {
  
-    const products = await fetchProducts();
+    const products = await fetchData();
     allProducts = products;
     productsContainer.innerHTML = "";
 
