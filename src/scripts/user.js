@@ -1,5 +1,5 @@
 import { UserBuilder } from "../builders/userBuilder.js";
-import { fetchProducts } from "../utils/api.js";
+import { fetchData } from "../utils/api.js";
 import { Cart } from "../classes/cart.js";
 import { LocalStorage, CART_KEY } from "../utils/localstorage.js";
 import { Builder } from "../builders/builder.js";
@@ -26,7 +26,7 @@ async function loadProducts() {
 
   try {
 
-    const products = await fetchProducts();
+    const products = await fetchData();
     allProducts = products;
     productsContainer.innerHTML = "";
 
@@ -191,7 +191,7 @@ order.addEventListener("submit", async (e) => {
 
   try {
 
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
 
     const response = await fetch("https://webshop-2025-be-g4.vercel.app/api/orders", {
       method: "POST",
