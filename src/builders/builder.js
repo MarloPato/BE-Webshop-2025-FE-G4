@@ -25,12 +25,10 @@ export class Builder {
 
   buildProductCard(product) {
     const element = document.createElement("article");
-    element.className = "product-card";
+    element.className = "product-card-admin";
     element.id = product._id ? product._id : "missing-id";
     element.innerHTML = `
-        <img src="${product.imageUrl}" alt="${product.name}" />
         <h3>${product.name}</h3>
-        <p>$${product.price.toFixed(2)}</p>
       `;
     let btnContainer = document.createElement("div");
     let editBtn = this.buildBtn("Edit", "edit-product-btn", `edit-product-${element.id}`);
