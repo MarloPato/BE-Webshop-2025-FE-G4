@@ -1,0 +1,491 @@
+@charset "UTF-8";
+:root {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #333;
+  background-color: #fff;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+.logo {
+  text-decoration: none;
+  text-transform: uppercase;
+  color: red;
+  text-shadow:
+    -1px -1px 0 navy,
+     1px -1px 0 navy,
+    -1px  1px 0 navy,
+     1px  1px 0 navy;
+  font-style: italic;
+}
+
+.hidden {
+  display: none;
+}
+
+.product-image {
+  object-fit: cover;
+  width: 100%;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 300px;
+  height: 100vh;
+  background-color: #fff;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  background-color: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.sidebar ul li {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  cursor: pointer;
+}
+
+.sidebar ul li:hover {
+  background-color: #f0f0f0;
+}
+
+
+.product-card-admin {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  border-bottom: 1px solid black;
+  justify-content: space-between;
+}
+
+.order {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.container1{
+  margin-left: 300px;
+}
+
+.container{
+  position: relative;
+}
+
+.top-bar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 1rem;
+}
+
+#productsAdmin {
+  display: flex;
+  flex-direction: column;
+  padding-left: 2rem;
+  position: relative;
+}
+#manageProductsBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0.7rem 1.2rem;
+}
+
+
+a {
+  cursor: pointer;
+}
+
+/* Header */
+.site-header {
+  background: #eaeaea;
+  padding: 1rem;
+}
+.site-header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-top: 2rem;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+}
+.nav-links a {
+  text-decoration: none;
+  color: black;
+}
+
+/* Main Content */
+.main-content {
+  padding: 2rem 0;
+  /* max-width: 800px; */
+  width: 100%;
+  /* display: flex; */
+  /* margin: auto; */
+}
+
+/* Products */
+#products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.product-card {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  text-align: center;
+}
+.product-card button {
+  background: lightgray;
+  border: none;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+/* Login */
+form {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  gap: 1rem;
+}
+form #error-message {
+  font-weight: 600;
+  color: #b00707;
+}
+
+.form-group {
+  display: flex;
+  flex-flow: column;
+  justify-content: flex-start;
+  align-items: stretch;
+}
+.form-group label {
+  font-weight: bold;
+  font-size: 16px;
+}
+.form-group input {
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+}
+.form-group .error {
+  box-shadow: 0 0 5px 2px #b00707;
+}
+.form-group .success {
+  box-shadow: 0 0 5px 2px #02a24d;
+}
+.form-group .form-text {
+  display: block;
+  margin-top: 5px;
+  font-size: 14px;
+  color: #6c757d;
+  margin-bottom: 10px;
+}
+.form-group .checkbox-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+.form-group .checkbox-text {
+  margin: 0;
+  font-size: 14px;
+  color: #6c757d;
+}
+
+/* Footer */
+.site-footer {
+  background: #eaeaea;
+  padding: 1rem;
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 1rem;
+}
+.footer-links a {
+  text-decoration: none;
+  color: black;
+}
+
+dialog {
+  padding: 2rem;
+  background-color: white;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border: none;
+  border-radius: 8px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+dialog > button:first-child {
+  position: absolute;
+  top: 0.8rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  line-height: 1;
+  color: #777;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+  font-weight: bold;
+  transition: color 0.2s ease;
+}
+dialog #closeModal:hover {
+  color: #333;
+}
+dialog #modalContent {
+  padding-top: 0.5rem;
+}
+
+/* Modal Dialog Styling */
+dialog#modal {
+  width: auto;
+  min-width: 350px;
+  max-width: 70%;
+  max-height: 80vh;
+  height: auto;
+  margin: auto;
+  position: relative;
+  overflow-y: auto;
+}
+
+dialog::backdrop {
+  background-color: rgba(0, 0, 0, 0.6);
+  -webkit-backdrop-filter: blur(2px);
+          backdrop-filter: blur(2px);
+}
+
+dialog[data-sidebar] {
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin: 0;
+  width: 300px;
+  height: 100vh;
+  min-width: 0px;
+  max-width: 100%;
+  max-height: 100%;
+  animation: slideIn 0.3s ease;
+}
+@media (max-width: 600px) {
+  dialog[data-sidebar] {
+    width: 100%;
+    border-radius: 0;
+  }
+}
+
+@keyframes slideIn {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+#createProduct {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+#createProduct::before {
+  content: "Skapa ny produkt";
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #eee;
+  color: #333;
+}
+
+#createProduct label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  margin-bottom: 0.1rem;
+  color: #333;
+}
+
+#createProduct input {
+  padding: 0.7rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  margin-bottom: 0.5rem;
+}
+
+#createProduct input:focus {
+  border-color: #3498db;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+#createProductBtn {
+  margin-top: 1rem;
+  padding: 0.7rem 1.2rem;
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: flex-end;
+}
+
+#createProductBtn:hover {
+  background-color: #df9629;
+}
+
+.create-button {
+  padding: 0.7rem 1.2rem;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  margin: 1rem 0;
+  transition: background-color 0.2s ease;
+}
+
+.create-button:hover {
+  background-color: #0b7dda;
+}
+
+#products {
+  margin-top: 1.5rem;
+}
+
+/* Styling för radera-produkt-modal */
+.delete-confirmation {
+  text-align: center;
+  width: 100%;
+  padding: 20px 0;
+}
+
+.delete-confirmation h2 {
+  margin-bottom: 20px;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.delete-confirmation p {
+  margin-bottom: 30px;
+  font-size: 1rem;
+}
+
+.confirmation-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.confirmation-buttons button {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+#cancelDeleteBtn {
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  color: #333;
+}
+
+#cancelDeleteBtn:hover {
+  background-color: #e1e1e1;
+}
+
+#confirmDeleteBtn {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+}
+
+#confirmDeleteBtn:hover {
+  background-color: #c0392b;
+}
+
+#loginForm button[type=submit],
+#registerButton,
+#registerForm button[type=submit] {
+  padding: 0.7rem 1.2rem;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  width: 200px;
+  margin-top: 0.8rem;
+  display: block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#loginForm button[type=submit] {
+  background-color: #4a90e2;
+}
+
+#loginForm button[type=submit]:hover {
+  background-color: #357abd;
+}
+
+#registerButton,
+#registerForm button[type=submit] {
+  background-color: #4caf50;
+}
+
+#registerButton:hover,
+#registerForm button[type=submit]:hover {
+  background-color: #43a047;
+}
+
+@media (max-width: 768px) {
+  dialog#modal {
+    width: 95%;
+    max-width: 95%;
+    padding: 1.5rem;
+  }
+  #createProduct input {
+    font-size: 16px;
+  }
+}/*# sourceMappingURL=style.css.map */
