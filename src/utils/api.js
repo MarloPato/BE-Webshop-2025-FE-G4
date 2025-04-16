@@ -12,7 +12,7 @@ export function getBaseUrl() {
   // return "http://localhost:5001/";
 }
 
-export async function fetchProducts(endpoint = "products") {
+export async function fetchData(endpoint = "products") {
   //! DONT USE THIS IN PRODUCTION
   const url = `${getBaseUrl()}${endpoint}`;
   let token = auth.getToken();
