@@ -1,5 +1,6 @@
 import { addProduct, updateProduct } from "../utils/api.js";
 import { Product } from "../classes/product.js";
+import { fetchData } from "../utils/api.js";
 
 
 
@@ -56,6 +57,31 @@ export class ProductFormBuilder {
     return this;
   }
 
+   async addCategoryField(id, label) {
+    const labelElement = document.createElement("label");
+    labelElement.setAttribute("for", id);
+    labelElement.textContent = label;
+    const select = document.createElement("select");
+    select.id = id;
+    select.name = id;
+    select.required = true;
+    const defaultOption = document.createElement("option");
+    defaultOption.value = "";
+    defaultOption.textContent = "Välj kategori";
+    select.append(defaultOption);
+    const categories = await fetchData("categories");
+    console.log(categories);
+    categories.forEach((category) => {
+      const option = document.createElement("option");
+      option.value = category._id;
+      option.textContent = category.name;
+      select.append(option);
+    });
+    this.form.append(labelElement);
+    this.form.append(select);
+    return this;
+  }
+
   addButton(id, text, type = "submit") {
     const button = document.createElement("button");
     button.id = id;
@@ -92,9 +118,10 @@ export class ProductFormBuilder {
     let priceValue = Number.parseFloat(document.querySelector("form#createProduct input#price").value);
     let descrValue = document.querySelector("form#createProduct input#description").value;
     let stockValue = Number.parseInt(document.querySelector("form#createProduct input#stock").value);
+    let categoryValue = document.querySelector("form#createProduct select#category").value;
     let imageValue = document.querySelector("form#createProduct input#imageUrl").value || "";
 
-    let product = new Product(nameValue, priceValue, descrValue, stockValue, imageValue);
+    let product = new Product(nameValue, priceValue, descrValue, stockValue, categoryValue, imageValue);
 
     const productId = this.form.dataset.productId;
     console.log("Product ID from dataset:", productId);
