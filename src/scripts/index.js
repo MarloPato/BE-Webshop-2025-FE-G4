@@ -1,4 +1,4 @@
-import { fetchProducts, addProduct, deleteProduct } from "../utils/api.js";
+import { fetchProducts, getBaseUrl } from "../utils/api.js";
 import { Product } from "../classes/product.js";
 import { Builder } from "../builders/builder.js";
 import { auth } from "../utils/auth.js";
@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
   updateNavigation();
   initAddProductButton();
   initProductHandlers();
+  loadCategories();
 });
 
 const modal = document.querySelector("#modal");
@@ -41,32 +42,88 @@ function handleLogout(e) {
 }
 
 let allProducts = [];
-// Function to fetch and render products
+
+async function loadCategories() {
+  try {
+    const response = await axios.get(`${getBaseUrl()}categories`);
+
+    if (response.status === 200) {
+      const categories = response.data;
+      const categoryFilter = document.getElementById("categoryFilter");
+
+      if (categoryFilter) {
+        categories.forEach((category) => {
+          const option = document.createElement("option");
+          option.value = category.name;
+          option.textContent =
+            category.name.charAt(0).toUpperCase() + category.name.slice(1); // Capitalize first letter
+          categoryFilter.appendChild(option);
+        });
+
+        categoryFilter.addEventListener("change", handleCategoryFilter);
+      }
+    }
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
+}
+
+async function handleCategoryFilter() {
+  const categoryFilter = document.getElementById("categoryFilter");
+  const selectedCategory = categoryFilter.value;
+  const productsContainer = document.getElementById("products");
+  productsContainer.innerHTML = "<p>Loading products...</p>";
+
+  try {
+    let products;
+    if (selectedCategory) {
+      const response = await axios.get(
+        `${getBaseUrl()}products/bycategory?category=${selectedCategory}`
+      );
+      products = response.status === 200 ? response.data : [];
+    } else {
+      products = await fetchProducts();
+    }
+
+    allProducts = products;
+    updateProductsDisplay(products);
+  } catch (error) {
+    console.error("Error filtering products by category:", error);
+    updateProductsDisplay([]);
+  }
+}
+
+function updateProductsDisplay(products) {
+  const productsContainer = document.getElementById("products");
+  productsContainer.innerHTML = "";
+
+  if (products.length > 0) {
+    let productBuilder = new Builder();
+    for (let x = 0; x < products.length; x++) {
+      productBuilder.buildProductCard(products[x]);
+      let productCards = productBuilder.build();
+      productsContainer.append(productCards[x]);
+    }
+  } else {
+    productsContainer.innerHTML =
+      "<p>No products available for this category.</p>";
+  }
+
+  renderProductCardEventListeners(allProducts);
+}
+
 async function loadProducts() {
   const productsContainer = document.getElementById("products");
   productsContainer.innerHTML = "<p>Loading products...</p>";
 
   try {
- 
     const products = await fetchProducts();
     allProducts = products;
-    productsContainer.innerHTML = "";
-
-    if (products.length > 0) {
-      let productBuilder = new Builder();
-      for (let x = 0; x < products.length; x++) {
-        productBuilder.buildProductCard(products[x]);
-        let productCards = productBuilder.build();
-        productsContainer.append(productCards[x]);
-      }
-    } else {
-      productsContainer.innerHTML = "<p>No products available.</p>";
-    }
+    updateProductsDisplay(products);
   } catch (error) {
     console.error("Error fetching products:", error);
     productsContainer.innerHTML = "<p>Failed to load products.</p>";
   }
-  renderProductCardEventListeners(allProducts);
 }
 
 const renderProductCardEventListeners = (allProducts = []) => {
@@ -75,7 +132,9 @@ const renderProductCardEventListeners = (allProducts = []) => {
     product.addEventListener("click", (event) => {
       if (event.target.tagName.toLowerCase() !== "button") {
         let builder = new Builder();
-        builder.buildProductCardInfo(allProducts.find((p) => p._id == product.id));
+        builder.buildProductCardInfo(
+          allProducts.find((p) => p._id == product.id)
+        );
         let productInfo = builder.build();
         let modalContent = document.querySelector("#modalContent");
         modalContent.append(productInfo[0]);

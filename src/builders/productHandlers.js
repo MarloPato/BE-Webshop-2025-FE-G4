@@ -38,6 +38,12 @@ async function handleEditButtonClick(event) {
   try {
     const product = await getProductById("products", productId);
 
+    if (!product) {
+      throw new Error(`No product found with ID: ${productId}`);
+    }
+
+    console.log("Retrieved product:", product);
+
     const productForm = new ProductFormBuilder("#modalContent");
 
     productForm
@@ -47,13 +53,14 @@ async function handleEditButtonClick(event) {
       .addNumberField("stock", "Stock:")
       .addTextField("imageUrl", "Image:")
       .addButton("createProductBtn", "Uppdatera produkt")
-      .populateWithProductData(product)
       .render();
+
+    productForm.populateWithProductData(product);
 
     modal.showModal();
   } catch (error) {
     console.error("Error fetching product data:", error);
-    alert("Ett fel uppstod när produkten skulle hämtas");
+    alert("Ett fel uppstod när produkten skulle hämtas: " + error.message);
   }
 }
 

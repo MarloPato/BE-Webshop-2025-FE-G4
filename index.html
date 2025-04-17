@@ -1,70 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hakim Livs - products</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script type="module" src="src/scripts/user.js"></script>
-  </head>
-  <body>
-    <div id="toast-container" style="position: fixed; top: 20px; right: 50%; transform: translateX(50%); z-index: 9999;"></div>
-    <header class="site-header">
-      <nav>
-        <a href="index.html" class="logo">Hakim Livs</a>
-        <ul class="nav-links">
-          <li><a href="index.html">Products</a></li>
-          <li><a data-cart>Cart (0)</a></li>
-          <li><a href="login.html">Login</a></li>
-        </ul>
-      </nav>
-    </header>    
-    <main>
-      <dialog id="modal">
-        <button id="closeModal">X</button>
-        <div id="modalContent"></div>
-      </dialog>
-      <div id="products"></div>
-    </main>
-    <footer class="site-footer">
-      <div class="footer-content">
-        <p>&copy; 2024 Hakim Livs. All rights reserved.</p>
-        <div class="footer-links">
-          <a href="/about">About</a>
-          <a href="/contact">Contact</a>
-          <a href="/terms">Terms</a>
-        </div>
-      </div>
-    </footer>
-    <dialog data-sidebar>
-      <button data-close-bar>X</button>
-      <div class="order-form hidden">
-        <button class="back-to-cart-btn">Back to Cart</button>
-        <form id="order" action="">
-          <label for="firstname">Firstname</label>
-          <input type="text" id="search" name="firstname" placeholder="Firstname" />
-          <label for="lastname">Lastname</label>
-          <input type="text" id="search" name="lastname" placeholder="Lastname" />
-          <label for="address">Address</label>
-          <input type="text" id="search" name="address" placeholder="Address" />
-          <label for="addressmumber">Address number</label>
-          <input type="text" id="search" name="addressnumber" placeholder="Address number" />
-          <label for="postalcode">Postal Code</label>
-          <input type="text" id="search" name="postalcode" placeholder="Postal Code" />
-          <label for="city">City</label>
-          <input type="text" id="search" name="city" placeholder="City" />
-          <label for="phonenumber">Phonenumber</label>
-          <input type="text" id="search" name="phonenumber" placeholder="Phonenumber" />
-          <label for="email">Email</label>
-          <input type="text" id="search" name="email" placeholder="Email" />
-          <button type="submit">Place Order</button>
-        </form>
-      </div>
-      <button class="proceed-btn">Proceed to checkout</button>
-      <section>
-        
-      </section>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hakim Livs - products</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script type="module" src="src/scripts/user.js"></script>
+</head>
+
+<body>
+  <div id="toast-container" style="position: fixed; top: 20px; right: 50%; transform: translateX(50%); z-index: 9999;">
+  </div>
+  <header class="site-header">
+    <nav>
+      <a href="index.html" class="logo">Hakim Livs</a>
+      <ul class="nav-links">
+        <li><a href="index.html">Products</a></li>
+        <li><a data-cart>Cart (0)</a></li>
+        <li><a href="login.html">Login</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main>
+    <dialog id="modal">
+      <button id="closeModal">X</button>
+      <div id="modalContent"></div>
     </dialog>
-  </body>
+
+    <div class="filter-container" style="margin: 20px; text-align: center;">
+      <label for="categoryFilter">Filter by Category:</label>
+      <select id="categoryFilter">
+        <option value="">All Categories</option>
+      </select>
+    </div>
+    <div id="products"></div>
+  </main>
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy; 2024 Hakim Livs. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+        <a href="/terms">Terms</a>
+      </div>
+    </div>
+  </footer>
+  <dialog data-sidebar>
+    <button data-close-bar>X</button>
+    <div class="order-form hidden">
+      <button class="back-to-cart-btn">Back to Cart</button>
+      <form id="order" action="">
+        <label for="firstname">Firstname</label>
+        <input type="text" id="search" name="firstname" placeholder="Firstname" />
+        <label for="lastname">Lastname</label>
+        <input type="text" id="search" name="lastname" placeholder="Lastname" />
+        <label for="address">Address</label>
+        <input type="text" id="search" name="address" placeholder="Address" />
+        <label for="addressmumber">Address number</label>
+        <input type="text" id="search" name="addressnumber" placeholder="Address number" />
+        <label for="postalcode">Postal Code</label>
+        <input type="text" id="search" name="postalcode" placeholder="Postal Code" />
+        <label for="city">City</label>
+        <input type="text" id="search" name="city" placeholder="City" />
+        <label for="phonenumber">Phonenumber</label>
+        <input type="text" id="search" name="phonenumber" placeholder="Phonenumber" />
+        <label for="email">Email</label>
+        <input type="text" id="search" name="email" placeholder="Email" />
+        <button type="submit">Place Order</button>
+      </form>
+    </div>
+    <button class="proceed-btn">Proceed to checkout</button>
+    <section>
+
+    </section>
+  </dialog>
+</body>
+
 </html>
