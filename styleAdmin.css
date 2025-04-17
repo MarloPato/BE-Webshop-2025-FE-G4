@@ -78,7 +78,9 @@ body {
 .order {
   display: flex;
   gap: 1rem;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid black;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .container1{

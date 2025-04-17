@@ -1,5 +1,6 @@
-import { deleteProduct, getProductById } from "../utils/api.js";
+import { deleteProduct, getProductById, getBaseUrl } from "../utils/api.js";
 import { ProductFormBuilder } from "./ProductFormBuilder.js";
+import { auth } from "../utils/auth.js";
 
 export function initProductHandlers() {
   document.addEventListener("click", function (event) {
@@ -10,8 +11,100 @@ export function initProductHandlers() {
     if (event.target && event.target.classList.contains("delete-product-btn")) {
       handleDeleteButtonClick(event);
     }
+
+    if (event.target && event.target.classList.contains("edit-order-btn")) {
+      editOrders(event);
+    }
+    
   });
 }
+
+async function editOrders(event) {
+  const modal = document.querySelector("#modal");
+  const modalContent = document.querySelector("#modalContent");
+
+  if (!modal || !modalContent) {
+    console.error("Modal-element saknas");
+    return;
+  }
+
+  // Töm modalinnehållet först
+  modalContent.innerHTML = "";
+
+  const order = event.target.closest(".order");
+  if (!order || !order.id) {
+    console.error("Order eller order-ID saknas");
+    return;
+  }
+
+  console.log("Order ID:", order.id);
+
+  // Skapa label och select-element
+  const label = document.createElement("label");
+  label.setAttribute("for", "orderStatus");
+  label.textContent = "Order Status:";
+
+  const select = document.createElement("select");
+  select.id = "orderStatus";
+  select.name = "orderStatus";
+
+  const statuses = ["received", "processing", "shipped", "delivered", "cancelled"];
+  statuses.forEach((status) => {
+    const option = document.createElement("option");
+    option.value = status;
+    option.textContent = status;
+    select.appendChild(option);
+  });
+
+  // Skapa Update-knappen
+  const updateBtn = document.createElement("button");
+  updateBtn.id = "updateOrderBtn";
+  updateBtn.textContent = "Update Order";
+  updateBtn.addEventListener("click", async () => {
+    const selectedStatus = select.value;
+    try {
+      const response = await fetch(`${getBaseUrl()}orders/${order.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.getToken()}`,
+        },
+        body: JSON.stringify({ status: selectedStatus }),
+      });
+
+      if (response.ok) {
+        const updatedOrder = await response.json();
+        console.log("Order updated:", updatedOrder);
+        modal.close();
+        location.reload();
+      } else {
+        console.error("Failed to update order:", response.statusText);
+        alert("Failed to update order");
+      }
+    } catch (error) {
+      console.error("Error updating order:", error);
+      alert("Error updating order");
+    }
+  });
+
+  // Skapa Cancel-knappen
+  const cancelBtn = document.createElement("button");
+  cancelBtn.id = "cancelOrderBtn";
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.addEventListener("click", () => {
+    modal.close();
+  });
+
+  // Lägg till alla element i modalinnehållet
+  modalContent.appendChild(label);
+  modalContent.appendChild(select);
+  modalContent.appendChild(updateBtn);
+  modalContent.appendChild(cancelBtn);
+
+  // Visa modalen
+  modal.showModal();
+}
+
 
 async function handleEditButtonClick(event) {
   const productCard = event.target.closest(".product-card-admin");
@@ -68,7 +161,11 @@ async function handleEditButtonClick(event) {
 }
 
 function handleDeleteButtonClick(event) {
-  const productCard = event.target.closest(".product-card");
+  console.log("Delete button clicked");
+  console.log(event);
+  const productCard = event.target.closest(".product-card-admin");
+
+  console.log(productCard)
   if (!productCard) return;
 
   const productName = productCard.querySelector("h3")?.textContent || "produkt";

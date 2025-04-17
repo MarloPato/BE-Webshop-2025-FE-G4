@@ -11,6 +11,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAddProductButton();
   initProductHandlers();
   loadCategories();
+  loadOrders();
 });
 
 const productsSideBarBtn = document.querySelector("#products");
@@ -21,22 +22,33 @@ productsSideBarBtn.addEventListener("click", () => {
   // loadProducts();
 });
 
+async function loadOrders() {
+  const ordersDiv = document.getElementById("ordersAdmin");
+
+  try {
+    const orders = await fetchData("orders");
+    orders.forEach((order) => {
+      const orderDiv = document.createElement("div");
+      orderDiv.id = order._id;
+      orderDiv.classList.add("order");
+      orderDiv.innerHTML = `
+        <h4>Order ID: ${order._id}</h4>
+        <p>Status: ${order.status}</p>
+        <div>
+          <button class="edit-order-btn" id="edit-order-${order._id}">Edit</button>
+        </div>
+      `;
+      ordersDiv.appendChild(orderDiv);
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    ordersDiv.innerHTML = "<p>Failed to load orders.</p>";
+  }
+}
+
 
 ordersSideBarBtn.addEventListener("click", async () => {
-  const orders = await fetchData("orders");
-  console.log(orders)
-  const ordersDiv = document.getElementById("ordersAdmin");
-  orders.forEach((order) => {
-    const orderDiv = document.createElement("div");
-    orderDiv.classList.add("order");
-    orderDiv.innerHTML = `
-      <p>Order ID: ${order._id}</p>
-      <p>Totalprice: ${order.totalPrice}</p>
-      <p>Status: ${order.status}</p>
-    `;
-    ordersDiv.appendChild(orderDiv);
-  }
-  );
+  
 });
 const usersDiv = document.getElementById("usersAdmin")
 usersSideBarBtn.addEventListener("click", () => {});

@@ -258,11 +258,11 @@ order.addEventListener("submit", async (e) => {
       body: JSON.stringify(payload),
     });
 
-    if (!response.ok) throw new Error("Kunde inte skicka ordern");
+    if (!response.ok) throw new Error("Could not create order");
 
     const result = await response.json();
-    console.log("Order skickad:", result);
-    alert("Tack för din beställning!");
+    console.log("Order sent:", result);
+    alert("Thank you for your order!");
 
     // Rensa formulär och varukorg om du vill
     order.reset();
@@ -270,8 +270,8 @@ order.addEventListener("submit", async (e) => {
     cart.clearCart();
     section.innerHTML = "";
   } catch (error) {
-    console.error("Fel vid order:", error);
-    alert("Något gick fel. Försök igen.");
+    console.error("Server error: ", error);
+    alert("Something went wrong with your order.");
   }
 });
 
