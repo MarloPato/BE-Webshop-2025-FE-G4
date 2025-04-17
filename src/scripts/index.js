@@ -127,11 +127,11 @@ modal.addEventListener("close", () => {
   document.querySelector("#modalContent").innerHTML = "";
 });
 
-function initAddProductButton() {
+async function initAddProductButton() {
   let addProductBtn = document.querySelector("#manageProductsBtn");
 
   if (addProductBtn) {
-    addProductBtn.addEventListener("click", () => {
+    addProductBtn.addEventListener("click", async () => {
       modalContent.innerHTML = "";
 
       const productForm = new ProductFormBuilder("#modalContent");
@@ -141,6 +141,9 @@ function initAddProductButton() {
         .addNumberField("price", "Price:")
         .addTextField("description", "Description:")
         .addNumberField("stock", "Stock:")
+
+        await productForm.addCategoryField("category", "Category:")
+        productForm
         .addTextField("imageUrl", "Image:")
         .addButton("createProductBtn", "Lägg till produkt")
         .render();
