@@ -136,6 +136,7 @@ export class ProductFormBuilder {
       const price = parseFloat(this.form.querySelector("#price").value);
       const description = this.form.querySelector("#description").value;
       const stock = parseInt(this.form.querySelector("#stock").value);
+      const category = this.form.querySelector("#category").value;
       const imageUrl =
         this.form.querySelector("#imageUrl").value ||
         "https://picsum.photos/200";
@@ -146,6 +147,7 @@ export class ProductFormBuilder {
         price,
         description,
         stock,
+        category,
         imageUrl,
       };
 
@@ -156,6 +158,7 @@ export class ProductFormBuilder {
 
       // Get product ID if updating
       const productId = this.form.dataset.productId;
+      console.log("Product ID for update:", productId);
 
       let response;
 
@@ -193,7 +196,7 @@ export class ProductFormBuilder {
 
       // Success - close modal and reload
       modal.close();
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       console.error("Error saving product:", error);
 

@@ -1,4 +1,4 @@
-import { fetchData, addProduct, deleteProduct } from "../utils/api.js";
+import { fetchData, addProduct, deleteProduct, getBaseUrl } from "../utils/api.js";
 import { Product } from "../classes/product.js";
 import { Builder } from "../builders/builder.js";
 import { auth } from "../utils/auth.js";
@@ -18,7 +18,7 @@ const usersSideBarBtn = document.querySelector("#users");
 const ordersSideBarBtn = document.querySelector("#orders");
 
 productsSideBarBtn.addEventListener("click", () => {
-  loadProducts();
+  // loadProducts();
 });
 
 
@@ -123,7 +123,7 @@ async function handleCategoryFilter() {
 }
 
 function updateProductsDisplay(products) {
-  const productsContainer = document.getElementById("products");
+  const productsContainer = document.getElementById("productsAdmin");
   productsContainer.innerHTML = "";
 
   if (products.length > 0) {
