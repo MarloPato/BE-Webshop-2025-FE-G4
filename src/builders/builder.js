@@ -28,7 +28,7 @@ export class Builder {
     element.className = "product-card-admin";
     element.id = product._id ? product._id : "missing-id";
     element.innerHTML = `
-        <h3>${product.name}</h3>
+        <h4>${product.name}</h4>
       `;
     let btnContainer = document.createElement("div");
     let editBtn = this.buildBtn("Edit", "edit-product-btn", `edit-product-${element.id}`);
