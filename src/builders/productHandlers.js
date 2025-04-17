@@ -14,7 +14,7 @@ export function initProductHandlers() {
 }
 
 async function handleEditButtonClick(event) {
-  const productCard = event.target.closest(".product-card");
+  const productCard = event.target.closest(".product-card-admin");
   if (!productCard) {
     console.error("Kunde inte hitta produktkortet");
     return;
@@ -45,6 +45,9 @@ async function handleEditButtonClick(event) {
       .addNumberField("price", "Price:")
       .addTextField("description", "Description:")
       .addNumberField("stock", "Stock:")
+
+      await productForm.addCategoryField("category", "Category:")
+      productForm
       .addTextField("imageUrl", "Image:")
       .addButton("createProductBtn", "Uppdatera produkt")
       .populateWithProductData(product)
