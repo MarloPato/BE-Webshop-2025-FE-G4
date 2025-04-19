@@ -7,15 +7,15 @@ import { initProductHandlers } from "../builders/productHandlers.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   loadProducts();
+  loadCategories();
+  loadOrders();
   updateNavigation();
   initAddProductButton();
   initProductHandlers();
-  loadCategories();
-  loadOrders();
 });
 
 const productsSideBarBtn = document.querySelector("#products");
-const usersSideBarBtn = document.querySelector("#users");
+const usersSideBarBtn = document.querySelector("#categories");
 const ordersSideBarBtn = document.querySelector("#orders");
 
 productsSideBarBtn.addEventListener("click", () => {
@@ -50,7 +50,7 @@ async function loadOrders() {
 ordersSideBarBtn.addEventListener("click", async () => {
   
 });
-const usersDiv = document.getElementById("usersAdmin")
+
 usersSideBarBtn.addEventListener("click", () => {});
 
 
@@ -84,6 +84,8 @@ function handleLogout(e) {
 
 let allProducts = [];
 
+const categoriesDiv = document.getElementById("categoriesAdmin");
+
 async function loadCategories() {
   try {
     const response = await axios.get(`${getBaseUrl()}categories`);
@@ -91,6 +93,18 @@ async function loadCategories() {
     if (response.status === 200) {
       const categories = response.data;
       const categoryFilter = document.getElementById("categoryFilter");
+
+      categories.forEach((category) => {
+        const categoryDiv = document.createElement("div");
+        categoryDiv.id = category._id;
+        categoryDiv.classList.add("category");
+        categoryDiv.innerHTML = `
+          <h4>${category.name}</h4>
+          <div>
+            <button class="edit-order-btn" id="edit-order-${category._id}">Edit</button>
+          </div>
+        `;
+        categoriesDiv.appendChild(categoryDiv);})
 
       if (categoryFilter) {
         categories.forEach((category) => {
@@ -222,4 +236,39 @@ async function initAddProductButton() {
     });
   }
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const containers = {
+    products: document.getElementById("productsContainer"),
+    categories: document.getElementById("categoriesContainer"),
+    orders: document.getElementById("ordersContainer")
+  };
+
+  const sidebarItems = {
+    products: document.getElementById("products"),
+    categories: document.getElementById("categories"),
+    orders: document.getElementById("orders")
+  };
+
+  function showContainer(selected) {
+    for (let key in containers) {
+      if (key === selected) {
+        containers[key].classList.remove("hidden");
+      } else {
+        containers[key].classList.add("hidden");
+      }
+    }
+  }
+
+  // Add click listeners
+  for (let key in sidebarItems) {
+    sidebarItems[key].addEventListener("click", () => {
+      showContainer(key);
+    });
+  }
+
+  // Visa produkter som default
+  showContainer("products");
+});
+
 
