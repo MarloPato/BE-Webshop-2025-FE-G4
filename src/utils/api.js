@@ -13,19 +13,18 @@ export function getBaseUrl() {
 }
 
 export async function fetchData(endpoint = "products") {
-  //! DONT USE THIS IN PRODUCTION
   const url = `${getBaseUrl()}${endpoint}`;
-  let token = auth.getToken();
   try {
+    let token = auth.getToken();
     const response = await axios.get(url, {
-      headers: { authorization: `Bearer ${token}` },
+      headers: token ? { authorization: `Bearer ${token}` } : {},
     });
     if (response.status === 200) {
       return response.data;
     }
     return [];
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error(`Error fetching ${endpoint}:`, error);
     return [];
   }
 }

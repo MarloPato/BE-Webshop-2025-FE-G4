@@ -1,44 +1,47 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Hakim Livs</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  </head>
-  <body>
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-      <h1>Registrera användare</h1>
-      <div id="register-container">
-        <form id="registerForm" class="register-form">
-          <div class="form-group">
-            <label for="firstName">Förnamn</label>
-            <input type="text" id="firstName" required />
-            <small class="form-text">Ange ditt förnamn</small>
-          </div>
-          <div class="form-group">
-            <label for="lastName">Efternamn</label>
-            <input type="text" id="lastName" required />
-            <small class="form-text">Ange ditt efternamn</small>
-          </div>
-          <div class="form-group">
-            <label for="email">E-postadress</label>
-            <input type="email" id="email" required placeholder="example@domain.com" />
-            <small class="form-text">Ange en giltig e-postadress som du har tillgång till</small>
-          </div>
-          <div class="form-group">
-            <label for="password">Lösenord</label>
-            <input type="password" id="password" required />
-            <small class="form-text">Minst 8 tecken med stor bokstav, liten bokstav, siffra och specialtecken</small>
-          </div>
-          <button type="submit">Registrera användare</button>
-        </form>
-      </div>
-    </main>
 
-    <!-- PAGE-SPECIFIC JAVASCRIPT -->
-    <script type="module" src="./src/scripts/register.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - Hakim Livs</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <h1>Register Account</h1>
+    <div id="register-container">
+      <form id="registerForm" class="register-form">
+        <div class="form-group">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" required />
+          <small class="form-text">Enter your first name</small>
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" required />
+          <small class="form-text">Enter your last name</small>
+        </div>
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" required placeholder="example@domain.com" />
+          <small class="form-text">Enter a valid email address that you have access to</small>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required />
+          <small class="form-text">At least 8 characters with uppercase, lowercase, number and special character</small>
+        </div>
+        <button type="submit">Register Account</button>
+      </form>
+    </div>
+  </main>
+
+  <!-- PAGE-SPECIFIC JAVASCRIPT -->
+  <script type="module" src="./src/scripts/register.js"></script>
+</body>
+
 </html>

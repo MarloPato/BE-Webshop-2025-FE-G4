@@ -1,8 +1,5 @@
-import { addProduct, updateProduct } from "../utils/api.js";
+import { addProduct, updateProduct, fetchData } from "../utils/api.js";
 import { Product } from "../classes/product.js";
-import { fetchData } from "../utils/api.js";
-
-
 import { auth } from "../utils/auth.js";
 import { getBaseUrl } from "../utils/api.js";
 
@@ -58,26 +55,35 @@ export class ProductFormBuilder {
     return this;
   }
 
-   async addCategoryField(id, label) {
+  async addCategoryField(id, label) {
     const labelElement = document.createElement("label");
     labelElement.setAttribute("for", id);
     labelElement.textContent = label;
+
     const select = document.createElement("select");
     select.id = id;
     select.name = id;
     select.required = true;
+
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
-    defaultOption.textContent = "Välj kategori";
+    defaultOption.textContent = "Select category"; // Changed from Swedish to English
     select.append(defaultOption);
-    const categories = await fetchData("categories");
-    console.log(categories);
-    categories.forEach((category) => {
-      const option = document.createElement("option");
-      option.value = category._id;
-      option.textContent = category.name;
-      select.append(option);
-    });
+
+    try {
+      const categories = await fetchData("categories");
+      console.log("Categories loaded:", categories);
+
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.value = category._id;
+        option.textContent = category.name;
+        select.append(option);
+      });
+    } catch (error) {
+      console.error("Error loading categories:", error);
+    }
+
     this.form.append(labelElement);
     this.form.append(select);
     return this;
@@ -103,9 +109,21 @@ export class ProductFormBuilder {
     this.form.querySelector("#stock").value = product.stock || 0;
     this.form.querySelector("#imageUrl").value = product.imageUrl || "";
 
+    // Set category value if product has category
+    const categorySelect = this.form.querySelector("#category");
+    if (categorySelect && product.category) {
+      const categoryId =
+        typeof product.category === "object"
+          ? product.category._id
+          : product.category;
+      categorySelect.value = categoryId;
+    }
+
     // Change button text
-    this.form.querySelector("#createProductBtn").textContent =
-      "Uppdatera produkt";
+    const submitBtn = this.form.querySelector("#createProductBtn");
+    if (submitBtn) {
+      submitBtn.textContent = "Update product"; // Changed from Swedish to English
+    }
 
     // Store product ID for update
     this.form.dataset.productId = product._id || "";
@@ -116,19 +134,6 @@ export class ProductFormBuilder {
 
   async handleSubmit() {
     console.log("Form submitted, dataset:", this.form.dataset);
-
-    let nameValue = document.querySelector("form#createProduct input#name").value;
-    let priceValue = Number.parseFloat(document.querySelector("form#createProduct input#price").value);
-    let descrValue = document.querySelector("form#createProduct input#description").value;
-    let stockValue = Number.parseInt(document.querySelector("form#createProduct input#stock").value);
-    let categoryValue = document.querySelector("form#createProduct select#category").value;
-    let imageValue = document.querySelector("form#createProduct input#imageUrl").value || "";
-
-    let product = new Product(nameValue, priceValue, descrValue, stockValue, categoryValue, imageValue);
-
-    const productId = this.form.dataset.productId;
-    console.log("Product ID from dataset:", productId);
-    console.log("Form submitted");
 
     try {
       // Get form data
@@ -155,6 +160,9 @@ export class ProductFormBuilder {
 
       // Get the token
       const token = auth.getToken();
+      if (!token) {
+        throw new Error("You must be logged in to perform this action");
+      }
 
       // Get product ID if updating
       const productId = this.form.dataset.productId;
@@ -195,12 +203,17 @@ export class ProductFormBuilder {
       console.log("API response:", response);
 
       // Success - close modal and reload
-      modal.close();
-      // window.location.reload();
+      const modal = document.querySelector("#modal");
+      if (modal) {
+        modal.close();
+      }
+
+      // Reload the page to show updated products
+      window.location.reload();
     } catch (error) {
       console.error("Error saving product:", error);
 
-      let errorMessage = "Ett fel uppstod när produkten skulle sparas";
+      let errorMessage = "An error occurred when saving the product"; // Changed from Swedish to English
 
       // Get more detailed error info if available
       if (error.response && error.response.data) {
@@ -226,19 +239,31 @@ export function initAddProductButton() {
   let addProductBtn = document.querySelector("#manageProductsBtn");
 
   if (addProductBtn) {
-    addProductBtn.addEventListener("click", () => {
-      modalContent.innerHTML = "";
+    addProductBtn.addEventListener("click", async () => {
+      const modalContent = document.querySelector("#modalContent");
+      if (modalContent) {
+        modalContent.innerHTML = "";
 
-      const productForm = new ProductFormBuilder("#modalContent");
+        const productForm = new ProductFormBuilder("#modalContent");
 
-      productForm
-        .addTextField("name", "Name:")
-        .addNumberField("price", "Price:")
-        .addTextField("description", "Description:")
-        .addNumberField("stock", "Stock:")
-        .addTextField("imageUrl", "Image:")
-        .addButton("createProductBtn", "Lägg till produkt")
-        .render();
+        productForm
+          .addTextField("name", "Name:")
+          .addNumberField("price", "Price:")
+          .addTextField("description", "Description:")
+          .addNumberField("stock", "Stock:");
+
+        await productForm.addCategoryField("category", "Category:");
+
+        productForm
+          .addTextField("imageUrl", "Image URL:")
+          .addButton("createProductBtn", "Add product") // Changed from Swedish to English
+          .render();
+
+        const modal = document.querySelector("#modal");
+        if (modal) {
+          modal.showModal();
+        }
+      }
     });
   }
 }

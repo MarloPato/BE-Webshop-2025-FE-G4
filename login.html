@@ -1,38 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - Hakim Livs</title>
-    <link rel="stylesheet" href="style.css" />
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-  </head>
-  <body>
-    <!-- MAIN CONTENT -->
-    <main class="main-content">
-      <h1>Login</h1>
-      <div id="login-container">
-        <form id="loginForm" class="login-form">
-          <div class="form-group">
-            <label for="username">E-post</label>
-            <input type="email" id="username" required placeholder="example@domain.com" />
-            <small class="form-text">Använd den e-postadress du angav vid registrering</small>
-          </div>
-          <div class="form-group">
-            <label for="password">Lösenord</label>
-            <input type="password" id="password" required />
-            <small class="form-text">Minst 8 tecken med stor bokstav, liten bokstav, siffra och specialtecken</small>
-          </div>
-          <div>
-            <p id="error-message"></p>
-          </div>
-          <button type="submit">Login</button>
-        </form>
-        <button type="button" id="registerButton">Registrera ny användare</button>
-      </div>
-    </main>
 
-    <!-- PAGE-SPECIFIC JAVASCRIPT -->
-    <script type="module" src="./src/scripts/login.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - Hakim Livs</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <h1>Login</h1>
+    <div id="login-container">
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <label for="username">Email</label>
+          <input type="email" id="username" required placeholder="example@domain.com" />
+          <small class="form-text">Use the email address you provided during registration</small>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" required />
+          <small class="form-text">At least 8 characters with uppercase, lowercase, number and special character</small>
+        </div>
+        <div>
+          <p id="error-message"></p>
+        </div>
+        <button type="submit">Login</button>
+      </form>
+      <button type="button" id="registerButton">Register new account</button>
+    </div>
+  </main>
+
+  <!-- PAGE-SPECIFIC JAVASCRIPT -->
+  <script type="module" src="./src/scripts/login.js"></script>
+</body>
+
 </html>

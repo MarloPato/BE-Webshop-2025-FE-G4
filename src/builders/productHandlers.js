@@ -16,20 +16,20 @@ export function initProductHandlers() {
 async function handleEditButtonClick(event) {
   const productCard = event.target.closest(".product-card-admin");
   if (!productCard) {
-    console.error("Kunde inte hitta produktkortet");
+    console.error("Could not find product card");
     return;
   }
 
   const productId = productCard.id;
   if (!productId) {
-    console.error("Produkten saknar ID");
+    console.error("Product is missing ID");
     return;
   }
 
   const modalContent = document.querySelector("#modalContent");
   const modal = document.querySelector("#modal");
   if (!modalContent || !modal) {
-    console.error("Modal-element saknas");
+    console.error("Modal elements are missing");
     return;
   }
 
@@ -50,12 +50,12 @@ async function handleEditButtonClick(event) {
       .addTextField("name", "Name:")
       .addNumberField("price", "Price:")
       .addTextField("description", "Description:")
-      .addNumberField("stock", "Stock:")
+      .addNumberField("stock", "Stock:");
 
-      await productForm.addCategoryField("category", "Category:")
-      productForm
+    await productForm.addCategoryField("category", "Category:");
+    productForm
       .addTextField("imageUrl", "Image:")
-      .addButton("createProductBtn", "Uppdatera produkt")
+      .addButton("createProductBtn", "Update product") // Changed from Swedish to English
       .render();
 
     productForm.populateWithProductData(product);
@@ -63,7 +63,7 @@ async function handleEditButtonClick(event) {
     modal.showModal();
   } catch (error) {
     console.error("Error fetching product data:", error);
-    alert("Ett fel uppstod när produkten skulle hämtas: " + error.message);
+    alert("An error occurred while fetching the product: " + error.message); // Changed from Swedish to English
   }
 }
 
@@ -71,7 +71,7 @@ function handleDeleteButtonClick(event) {
   const productCard = event.target.closest(".product-card");
   if (!productCard) return;
 
-  const productName = productCard.querySelector("h3")?.textContent || "produkt";
+  const productName = productCard.querySelector("h3")?.textContent || "product";
   const productId = productCard.id;
 
   const modalContent = document.querySelector("#modalContent");
@@ -83,11 +83,11 @@ function handleDeleteButtonClick(event) {
   const confirmationDiv = document.createElement("div");
   confirmationDiv.className = "delete-confirmation";
   confirmationDiv.innerHTML = `
-      <h2>Radera produkt</h2>
-      <p>Är du säker att du vill radera produkten "${productName}"?</p>
+      <h2>Delete Product</h2>
+      <p>Are you sure you want to delete the product "${productName}"?</p>
       <div class="confirmation-buttons">
-        <button id="cancelDeleteBtn">Nej, avbryt</button>
-        <button id="confirmDeleteBtn">Ja, radera</button>
+        <button id="cancelDeleteBtn">No, cancel</button>
+        <button id="confirmDeleteBtn">Yes, delete</button>
       </div>
     `;
 
@@ -101,11 +101,11 @@ function handleDeleteButtonClick(event) {
     deleteProduct("products", productId)
       .then(() => {
         modal.close();
-        location.reload(); // Ladda om sidan för att visa ändringarna
+        location.reload(); // Reload page to show changes
       })
       .catch((error) => {
         console.error("Error deleting product:", error);
-        alert("Ett fel uppstod när produkten skulle tas bort");
+        alert("An error occurred when deleting the product"); // Changed from Swedish to English
       });
   });
 

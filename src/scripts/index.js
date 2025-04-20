@@ -1,4 +1,9 @@
-import { fetchData, addProduct, deleteProduct, getBaseUrl } from "../utils/api.js";
+import {
+  fetchData,
+  addProduct,
+  deleteProduct,
+  getBaseUrl,
+} from "../utils/api.js";
 import { Product } from "../classes/product.js";
 import { Builder } from "../builders/builder.js";
 import { auth } from "../utils/auth.js";
@@ -11,36 +16,70 @@ document.addEventListener("DOMContentLoaded", () => {
   initAddProductButton();
   initProductHandlers();
   loadCategories();
+  setupTabSwitching();
 });
 
-const productsSideBarBtn = document.querySelector("#products");
-const usersSideBarBtn = document.querySelector("#users");
-const ordersSideBarBtn = document.querySelector("#orders");
+function setupTabSwitching() {
+  const productsSideBarBtn = document.querySelector("#products");
+  const usersSideBarBtn = document.querySelector("#users");
+  const ordersSideBarBtn = document.querySelector("#orders");
 
-productsSideBarBtn.addEventListener("click", () => {
-  // loadProducts();
-});
+  const productsContainer = document.querySelector(".container:nth-child(1)");
+  const usersContainer = document.querySelector(".container:nth-child(2)");
+  const ordersContainer = document.querySelector(".container:nth-child(3)");
 
+  // Hide all except products initially
+  usersContainer.style.display = "none";
+  ordersContainer.style.display = "none";
 
-ordersSideBarBtn.addEventListener("click", async () => {
-  const orders = await fetchData("orders");
-  console.log(orders)
-  const ordersDiv = document.getElementById("ordersAdmin");
-  orders.forEach((order) => {
-    const orderDiv = document.createElement("div");
-    orderDiv.classList.add("order");
-    orderDiv.innerHTML = `
-      <p>Order ID: ${order._id}</p>
-      <p>Totalprice: ${order.totalPrice}</p>
-      <p>Status: ${order.status}</p>
-    `;
-    ordersDiv.appendChild(orderDiv);
-  }
-  );
-});
-const usersDiv = document.getElementById("usersAdmin")
-usersSideBarBtn.addEventListener("click", () => {});
+  productsSideBarBtn.addEventListener("click", () => {
+    productsContainer.style.display = "block";
+    usersContainer.style.display = "none";
+    ordersContainer.style.display = "none";
+    loadProducts();
+  });
 
+  usersSideBarBtn.addEventListener("click", () => {
+    productsContainer.style.display = "none";
+    usersContainer.style.display = "block";
+    ordersContainer.style.display = "none";
+    // Load users function would go here
+  });
+
+  ordersSideBarBtn.addEventListener("click", async () => {
+    productsContainer.style.display = "none";
+    usersContainer.style.display = "none";
+    ordersContainer.style.display = "block";
+
+    // Load orders
+    const ordersDiv = document.getElementById("ordersAdmin");
+    ordersDiv.innerHTML = "<p>Loading orders...</p>";
+
+    try {
+      const orders = await fetchData("orders");
+      console.log(orders);
+
+      if (orders && orders.length > 0) {
+        ordersDiv.innerHTML = "";
+        orders.forEach((order) => {
+          const orderDiv = document.createElement("div");
+          orderDiv.classList.add("order");
+          orderDiv.innerHTML = `
+            <p>Order ID: ${order._id}</p>
+            <p>Total price: ${order.totalPrice}</p>
+            <p>Status: ${order.status}</p>
+          `;
+          ordersDiv.appendChild(orderDiv);
+        });
+      } else {
+        ordersDiv.innerHTML = "<p>No orders found</p>";
+      }
+    } catch (error) {
+      console.error("Error loading orders:", error);
+      ordersDiv.innerHTML = "<p>Error loading orders</p>";
+    }
+  });
+}
 
 const modal = document.querySelector("#modal");
 
@@ -49,13 +88,13 @@ function updateNavigation() {
 
   if (loginLink) {
     if (auth.isLoggedIn()) {
-      loginLink.textContent = "Logga ut";
+      loginLink.textContent = "Logout";
       loginLink.href = "#";
 
-      // Ta bort eventuell befintlig lyssnare
+      // Remove any existing listener
       loginLink.removeEventListener("click", handleLogout);
 
-      // Lägg till lyssnare för utloggning
+      // Add logout listener
       loginLink.addEventListener("click", handleLogout);
     } else {
       loginLink.textContent = "Login";
@@ -81,6 +120,11 @@ async function loadCategories() {
       const categoryFilter = document.getElementById("categoryFilter");
 
       if (categoryFilter) {
+        // Clear existing options except the first one
+        while (categoryFilter.options.length > 1) {
+          categoryFilter.remove(1);
+        }
+
         categories.forEach((category) => {
           const option = document.createElement("option");
           option.value = category.name;
@@ -100,45 +144,32 @@ async function loadCategories() {
 async function handleCategoryFilter() {
   const categoryFilter = document.getElementById("categoryFilter");
   const selectedCategory = categoryFilter.value;
-  const productsContainer = document.getElementById("products");
+  const productsContainer = document.getElementById("productsAdmin");
   productsContainer.innerHTML = "<p>Loading products...</p>";
 
   try {
     let products;
-    if (selectedCategory) {
+
+    if (selectedCategory === "") {
+      // Empty selection = All Categories
+      products = await fetchData("products");
+      console.log("All products loaded:", products);
+    } else {
+      // Specific category selected
+      console.log("Filtering by category:", selectedCategory);
       const response = await axios.get(
         `${getBaseUrl()}products/bycategory?category=${selectedCategory}`
       );
       products = response.status === 200 ? response.data : [];
-    } else {
-      products = await fetchProducts();
+      console.log("Filtered products:", products);
     }
 
     allProducts = products;
     updateProductsDisplay(products);
   } catch (error) {
-    console.error("Error filtering products by category:", error);
-    updateProductsDisplay([]);
+    console.error("Error filtering products:", error);
+    productsContainer.innerHTML = "<p>Error loading products.</p>";
   }
-}
-
-function updateProductsDisplay(products) {
-  const productsContainer = document.getElementById("productsAdmin");
-  productsContainer.innerHTML = "";
-
-  if (products.length > 0) {
-    let productBuilder = new Builder();
-    for (let x = 0; x < products.length; x++) {
-      productBuilder.buildProductCard(products[x]);
-      let productCards = productBuilder.build();
-      productsContainer.append(productCards[x]);
-    }
-  } else {
-    productsContainer.innerHTML =
-      "<p>No products available for this category.</p>";
-  }
-
-  renderProductCardEventListeners(allProducts);
 }
 
 async function loadProducts() {
@@ -146,8 +177,7 @@ async function loadProducts() {
   productsContainer.innerHTML = "<p>Loading products...</p>";
 
   try {
- 
-    const products = await fetchData();
+    const products = await fetchData("products");
     allProducts = products;
     updateProductsDisplay(products);
   } catch (error) {
@@ -156,28 +186,23 @@ async function loadProducts() {
   }
 }
 
-const renderProductCardEventListeners = (allProducts = []) => {
-  let products = document.querySelectorAll(".product-card");
-  products.forEach((product) => {
-    product.addEventListener("click", (event) => {
-      if (event.target.tagName.toLowerCase() !== "button") {
-        let builder = new Builder();
-        builder.buildProductCardInfo(
-          allProducts.find((p) => p._id == product.id)
-        );
-        let productInfo = builder.build();
-        let modalContent = document.querySelector("#modalContent");
-        modalContent.append(productInfo[0]);
-        modal.showModal();
-      }
-    });
-  });
-};
+function updateProductsDisplay(products) {
+  const productsContainer = document.getElementById("productsAdmin");
+  productsContainer.innerHTML = "";
 
-const manageProductsBtn = document.querySelector("#manageProductsBtn");
-manageProductsBtn.addEventListener("click", () => {
-  modal.showModal();
-});
+  if (products && products.length > 0) {
+    let productBuilder = new Builder();
+    for (let x = 0; x < products.length; x++) {
+      productBuilder.buildProductCard(products[x]);
+      let productCards = productBuilder.build();
+      productsContainer.append(productCards[x]);
+    }
+    initProductHandlers();
+  } else {
+    productsContainer.innerHTML =
+      "<p>No products available for this category.</p>";
+  }
+}
 
 document.querySelector("#closeModal").addEventListener("click", () => {
   modal.close();
@@ -191,23 +216,34 @@ async function initAddProductButton() {
   let addProductBtn = document.querySelector("#manageProductsBtn");
 
   if (addProductBtn) {
+    // Update button text to English
+    addProductBtn.textContent = "Create a product";
+
     addProductBtn.addEventListener("click", async () => {
-      modalContent.innerHTML = "";
+      const modalContent = document.querySelector("#modalContent");
+      if (modalContent) {
+        modalContent.innerHTML = "";
 
-      const productForm = new ProductFormBuilder("#modalContent");
+        const productForm = new ProductFormBuilder("#modalContent");
 
-      productForm
-        .addTextField("name", "Name:")
-        .addNumberField("price", "Price:")
-        .addTextField("description", "Description:")
-        .addNumberField("stock", "Stock:")
-
-        await productForm.addCategoryField("category", "Category:")
         productForm
-        .addTextField("imageUrl", "Image:")
-        .addButton("createProductBtn", "Lägg till produkt")
-        .render();
+          .addTextField("name", "Name:")
+          .addNumberField("price", "Price:")
+          .addTextField("description", "Description:")
+          .addNumberField("stock", "Stock:");
+
+        await productForm.addCategoryField("category", "Category:");
+
+        productForm
+          .addTextField("imageUrl", "Image URL:")
+          .addButton("createProductBtn", "Add product")
+          .render();
+
+        const modal = document.querySelector("#modal");
+        if (modal) {
+          modal.showModal();
+        }
+      }
     });
   }
 }
-

@@ -19,8 +19,7 @@ export class UserBuilder {
     let info = document.createElement("article");
     info.classList.add("product-card");
     info.id = product._id ? product._id : "missing-id";
-    let button = this.buildBtn("Buy", "add-to-cart-btn", info.id);
-    info.append(image, name, price, description, button);
+    info.append(image, name, price, description);
     this.resultArr.push(info);
   }
 
@@ -29,12 +28,18 @@ export class UserBuilder {
     element.className = "product-card";
     element.id = product._id ? product._id : "missing-id";
     element.innerHTML = `
-          <img src="${product.imageUrl}" class="product-image" alt="${product.name}" />
+          <img src="${product.imageUrl}" class="product-image" alt="${
+      product.name
+    }" />
           <h3>${product.name}</h3>
           <p>$${product.price.toFixed(2)}</p>
         `;
     let btnContainer = document.createElement("div");
-    let addToCartBtn = this.buildBtn("Add To Cart", "add-to-cart-btn", `add-to-cart-${element.id}`);
+    let addToCartBtn = this.buildBtn(
+      "Add To Cart",
+      "add-to-cart-btn",
+      `add-to-cart-${element.id}`
+    );
     btnContainer.append(addToCartBtn);
     element.append(btnContainer);
 
@@ -56,7 +61,6 @@ export class UserBuilder {
     const groupedItems = {};
 
     cart.items.forEach((item) => {
-      // Vi använder namn som nyckel för att gruppera produkter av samma typ i varukorgsmodalen då ID:s som genererars inte är unika.
       const name = item.name;
 
       if (!groupedItems[name]) {
@@ -71,7 +75,9 @@ export class UserBuilder {
 
     Object.values(groupedItems).forEach((item) => {
       let li = document.createElement("li");
-      li.textContent = `${item.name} - $${item.price.toFixed(2)}  \u00A0\u00A0\u00A0x ${item.quantity}`;
+      li.textContent = `${item.name} - $${item.price.toFixed(
+        2
+      )}  \u00A0\u00A0\u00A0x ${item.quantity}`;
       ul.append(li);
     });
 
@@ -82,7 +88,7 @@ export class UserBuilder {
     div.classList.add("cart-info");
     div.append(h4, ul, total);
     if (cart.items.length > 0) {
-      let clearButton = this.buildBtn("Töm varukorg", "clear-cart-btn");
+      let clearButton = this.buildBtn("Clear Cart", "clear-cart-btn");
       div.appendChild(clearButton);
     }
 
