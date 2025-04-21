@@ -732,7 +732,6 @@ dialog > button:first-child:hover {
   text-decoration: underline;
 }
 
-/* Order items - preserved styling */
 .order-item {
   display: flex;
   flex-direction: column;
@@ -794,7 +793,6 @@ dialog > button:first-child:hover {
   align-self: flex-end;
 }
 
-/* Responsive styles */
 @media (max-width: 768px) {
   .sidebar {
     width: 100%;
@@ -895,4 +893,123 @@ dialog > button:first-child:hover {
   .modal-btn {
     width: 100%;
   }
+}
+#saveCategoryBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: 500;
+  width: auto;
+  transition: background-color 0.2s ease;
+  margin-left: auto;
+  display: block;
+}
+
+#saveCategoryBtn:hover {
+  background-color: #45a049;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+.category-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+  transition: background-color 0.2s ease;
+}
+
+.category-item:hover {
+  background-color: #f9f9f9;
+}
+
+.category-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 70%;
+}
+
+.category-name {
+  font-weight: 500;
+  font-size: 16px;
+  text-transform: capitalize;
+}
+
+.category-actions {
+  display: flex;
+  gap: 10px;
+  min-width: 140px;
+  justify-content: flex-end;
+}
+
+.category-edit-form {
+  padding: 20px;
+}
+
+.category-edit-form h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.category-edit-form .form-group {
+  margin-bottom: 20px;
+}
+
+.category-edit-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.category-edit-form input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+#createCategoryBtn {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 15px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  margin-right: auto;
+}
+
+#createCategoryBtn:hover {
+  background-color: #45a049;
+}
+
+.edit-category-btn {
+  background-color: #2196f3;
+  color: white;
+}
+
+.edit-category-btn:hover {
+  background-color: #0b7dda;
+}
+
+.delete-category-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.delete-category-btn:hover {
+  background-color: #d32f2f;
 }

@@ -10,6 +10,11 @@ import { auth } from "../utils/auth.js";
 import { ProductFormBuilder } from "../builders/ProductFormBuilder.js";
 import { initProductHandlers } from "../builders/productHandlers.js";
 import { fetchUsers, buildUsersList } from "../utils/userManagement.js";
+import {
+  fetchCategories,
+  buildCategoriesList,
+  createCategory,
+} from "../utils/categoryManagement.js";
 
 // Global variable to store orders data
 let ordersData = [];
@@ -26,17 +31,21 @@ document.addEventListener("DOMContentLoaded", () => {
   loadCategories();
 
   setupUserFilter();
+  setupCreateCategoryButton();
 });
 
 function setupTabSwitching() {
   const productsSideBarBtn = document.querySelector("#products");
+  const categoriesSideBarBtn = document.querySelector("#categories");
   const usersSideBarBtn = document.querySelector("#users");
   const ordersSideBarBtn = document.querySelector("#orders");
 
   const productsContainer = document.querySelector(".container:nth-child(1)");
-  const usersContainer = document.querySelector(".container:nth-child(2)");
-  const ordersContainer = document.querySelector(".container:nth-child(3)");
+  const categoriesContainer = document.querySelector(".container:nth-child(2)");
+  const usersContainer = document.querySelector(".container:nth-child(3)");
+  const ordersContainer = document.querySelector(".container:nth-child(4)");
 
+  categoriesContainer.style.display = "none";
   usersContainer.style.display = "none";
   ordersContainer.style.display = "none";
 
@@ -44,10 +53,12 @@ function setupTabSwitching() {
 
   productsSideBarBtn.addEventListener("click", () => {
     productsContainer.style.display = "block";
+    categoriesContainer.style.display = "none";
     usersContainer.style.display = "none";
     ordersContainer.style.display = "none";
 
     productsSideBarBtn.classList.add("active");
+    categoriesSideBarBtn.classList.remove("active");
     usersSideBarBtn.classList.remove("active");
     ordersSideBarBtn.classList.remove("active");
 
@@ -59,12 +70,33 @@ function setupTabSwitching() {
     loadProducts();
   });
 
+  categoriesSideBarBtn.addEventListener("click", () => {
+    productsContainer.style.display = "none";
+    categoriesContainer.style.display = "block";
+    usersContainer.style.display = "none";
+    ordersContainer.style.display = "none";
+
+    productsSideBarBtn.classList.remove("active");
+    categoriesSideBarBtn.classList.add("active");
+    usersSideBarBtn.classList.remove("active");
+    ordersSideBarBtn.classList.remove("active");
+
+    const modal = document.querySelector("#modal");
+    if (modal && modal.open) {
+      modal.close();
+    }
+
+    loadCategoriesForManagement();
+  });
+
   usersSideBarBtn.addEventListener("click", () => {
     productsContainer.style.display = "none";
+    categoriesContainer.style.display = "none";
     usersContainer.style.display = "block";
     ordersContainer.style.display = "none";
 
     productsSideBarBtn.classList.remove("active");
+    categoriesSideBarBtn.classList.remove("active");
     usersSideBarBtn.classList.add("active");
     ordersSideBarBtn.classList.remove("active");
 
@@ -78,10 +110,12 @@ function setupTabSwitching() {
 
   ordersSideBarBtn.addEventListener("click", async () => {
     productsContainer.style.display = "none";
+    categoriesContainer.style.display = "none";
     usersContainer.style.display = "none";
     ordersContainer.style.display = "block";
 
     productsSideBarBtn.classList.remove("active");
+    categoriesSideBarBtn.classList.remove("active");
     usersSideBarBtn.classList.remove("active");
     ordersSideBarBtn.classList.add("active");
 
@@ -101,6 +135,81 @@ function setupUserFilter() {
       await loadUsers(userFilter.value);
     });
   }
+}
+
+function setupCreateCategoryButton() {
+  const createCategoryBtn = document.getElementById("createCategoryBtn");
+  if (createCategoryBtn) {
+    createCategoryBtn.addEventListener("click", () => {
+      showCreateCategoryModal();
+    });
+  }
+}
+
+function showCreateCategoryModal() {
+  const modalContent = document.querySelector("#modalContent");
+  const modal = document.querySelector("#modal");
+
+  if (!modalContent || !modal) return;
+
+  modalContent.innerHTML = "";
+
+  const createForm = document.createElement("div");
+  createForm.className = "category-edit-form";
+  createForm.innerHTML = `
+    <h2>Create New Category</h2>
+    
+    <div class="form-group">
+      <label for="categoryName">Category Name:</label>
+      <input type="text" id="categoryName" name="categoryName" placeholder="Enter category name" required>
+    </div>
+    
+    <div class="form-actions">
+      <button id="cancelCreateBtn" type="button">Cancel</button>
+      <button id="createCategoryConfirmBtn" type="button">Create Category</button>
+    </div>
+  `;
+
+  modalContent.appendChild(createForm);
+
+  document.getElementById("cancelCreateBtn").addEventListener("click", () => {
+    modal.close();
+  });
+
+  document
+    .getElementById("createCategoryConfirmBtn")
+    .addEventListener("click", async () => {
+      const categoryName = document.getElementById("categoryName").value.trim();
+
+      if (!categoryName) {
+        alert("Category name cannot be empty");
+        return;
+      }
+
+      try {
+        await createCategory({ name: categoryName });
+        modal.close();
+
+        // Refresh the categories list
+        loadCategoriesForManagement();
+      } catch (error) {
+        let errorMessage = "Failed to create category";
+
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.error
+        ) {
+          errorMessage += ": " + error.response.data.error;
+        } else if (error.message) {
+          errorMessage += ": " + error.message;
+        }
+
+        alert(errorMessage);
+      }
+    });
+
+  modal.showModal();
 }
 
 async function loadUsers(filter = "") {
@@ -128,6 +237,22 @@ async function loadUsers(filter = "") {
   } catch (error) {
     console.error("Error loading users:", error);
     usersDiv.innerHTML = "<p>Error loading users: " + error.message + "</p>";
+  }
+}
+
+async function loadCategoriesForManagement() {
+  const categoriesDiv = document.getElementById("categoriesAdmin");
+  if (!categoriesDiv) return;
+
+  categoriesDiv.innerHTML = "<p>Loading categories...</p>";
+
+  try {
+    const categories = await fetchCategories();
+    buildCategoriesList(categories, "categoriesAdmin");
+  } catch (error) {
+    console.error("Error loading categories:", error);
+    categoriesDiv.innerHTML =
+      "<p>Error loading categories: " + error.message + "</p>";
   }
 }
 
