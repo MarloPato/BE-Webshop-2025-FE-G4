@@ -553,3 +553,100 @@ dialog#modal::backdrop {
     width: 100%;
   }
 }
+
+.cart-items-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cart-item {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--light-gray);
+  position: relative;
+}
+
+.cart-item-details {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.cart-item-name {
+  font-weight: 500;
+  flex: 1;
+  margin-right: 8px;
+}
+
+.cart-item-price {
+  color: var(--dark-gray);
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.qty-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--medium-gray);
+  background-color: white;
+  color: var(--dark-gray);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qty-btn:hover {
+  background-color: var(--light-gray);
+}
+
+.decrement-btn {
+  color: var(--secondary-color);
+}
+
+.increment-btn {
+  color: var(--primary-color);
+}
+
+.quantity-display {
+  margin: 0 12px;
+  font-weight: 500;
+  min-width: 24px;
+  text-align: center;
+}
+
+.cart-item-total {
+  align-self: flex-end;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.cart-total {
+  font-size: 18px;
+  margin: 20px 0;
+  text-align: right;
+  color: var(--primary-color);
+}
+
+.clear-cart-btn {
+  margin-top: 20px;
+}
+
+dialog[data-sidebar] {
+  width: 380px;
+}
+
+@media (max-width: a768px) {
+  dialog[data-sidebar] {
+    width: 100%;
+  }
+}

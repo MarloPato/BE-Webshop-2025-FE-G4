@@ -198,6 +198,7 @@ const openCart = (parentElement, userCart) => {
   parentElement.innerHTML = "";
   child.forEach((c) => parentElement.append(c));
 
+  // Add event listeners for the clear cart button
   const clearButton = parentElement.querySelector(".clear-cart-btn");
   if (clearButton) {
     clearButton.addEventListener("click", () => {
@@ -209,6 +210,61 @@ const openCart = (parentElement, userCart) => {
         "Your cart has been cleared.</p>";
     });
   }
+
+  // Add event listeners for the increment buttons
+  const incrementButtons = parentElement.querySelectorAll(".increment-btn");
+  incrementButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+      const product = allProducts.find((p) => p._id === productId);
+
+      // If product is in allProducts, add it to cart
+      if (product) {
+        cart.addItem(product);
+      } else {
+        // Otherwise, use the first item in cart with this productId (for consistency)
+        const existingItem = cart.items.find(
+          (item) => item._id === productId || item.productId === productId
+        );
+        if (existingItem) {
+          cart.incrementItem(productId);
+        }
+      }
+
+      cart.updateCart();
+      LocalStorage.saveToStorage(CART_KEY, product || existingItem);
+      openCart(parentElement, cart); // Refresh the cart UI
+    });
+  });
+
+  // Add event listeners for the decrement buttons
+  const decrementButtons = parentElement.querySelectorAll(".decrement-btn");
+  decrementButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const productId = button.dataset.productId;
+
+      // Remove one item with this product ID
+      cart.decrementItem(productId);
+      cart.updateCart();
+
+      // Update localStorage
+      const cartItems = LocalStorage.getStorageAsJSON(CART_KEY) || [];
+      const updatedItems = [...cartItems];
+
+      // Find the index of the first item with this productId
+      const indexToRemove = updatedItems.findIndex(
+        (item) => item._id === productId || item.productId === productId
+      );
+
+      if (indexToRemove !== -1) {
+        // Remove only one instance
+        updatedItems.splice(indexToRemove, 1);
+        localStorage.setItem(CART_KEY, JSON.stringify(updatedItems));
+      }
+
+      openCart(parentElement, cart); // Refresh the cart UI
+    });
+  });
 };
 
 const addToCart = (product) => {
