@@ -31,8 +31,16 @@ export class Builder {
         <h3>${product.name}</h3>
       `;
     let btnContainer = document.createElement("div");
-    let editBtn = this.buildBtn("Edit", "edit-product-btn", `edit-product-${element.id}`);
-    let deleteBtn = this.buildBtn("Delete", "delete-product-btn", `delete-product-${element.id}`);
+    let editBtn = this.buildBtn(
+      "Edit",
+      "edit-product-btn",
+      `edit-product-${element.id}`
+    );
+    let deleteBtn = this.buildBtn(
+      "Delete",
+      "delete-product-btn",
+      `delete-product-${element.id}`
+    );
     btnContainer.append(editBtn, deleteBtn);
     element.append(btnContainer);
 

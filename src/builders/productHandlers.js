@@ -2,18 +2,27 @@ import { deleteProduct, getProductById } from "../utils/api.js";
 import { ProductFormBuilder } from "./ProductFormBuilder.js";
 
 export function initProductHandlers() {
-  document.addEventListener("click", function (event) {
-    if (event.target && event.target.classList.contains("edit-product-btn")) {
-      handleEditButtonClick(event);
-    }
+  const productsContainer = document.getElementById("productsAdmin");
 
-    if (event.target && event.target.classList.contains("delete-product-btn")) {
-      handleDeleteButtonClick(event);
-    }
-  });
+  if (productsContainer) {
+    const editButtons = productsContainer.querySelectorAll(".edit-product-btn");
+    editButtons.forEach((button) => {
+      button.addEventListener("click", handleEditButtonClick);
+    });
+
+    const deleteButtons = productsContainer.querySelectorAll(
+      ".delete-product-btn"
+    );
+    deleteButtons.forEach((button) => {
+      button.addEventListener("click", handleDeleteButtonClick);
+    });
+  }
 }
 
 async function handleEditButtonClick(event) {
+  event.preventDefault();
+  event.stopPropagation();
+
   const productCard = event.target.closest(".product-card-admin");
   if (!productCard) {
     console.error("Could not find product card");
@@ -54,8 +63,8 @@ async function handleEditButtonClick(event) {
 
     await productForm.addCategoryField("category", "Category:");
     productForm
-      .addTextField("imageUrl", "Image:")
-      .addButton("createProductBtn", "Update product") // Changed from Swedish to English
+      .addTextField("imageUrl", "Image URL:")
+      .addButton("createProductBtn", "Update product")
       .render();
 
     productForm.populateWithProductData(product);
@@ -63,12 +72,15 @@ async function handleEditButtonClick(event) {
     modal.showModal();
   } catch (error) {
     console.error("Error fetching product data:", error);
-    alert("An error occurred while fetching the product: " + error.message); // Changed from Swedish to English
+    alert("An error occurred while fetching the product: " + error.message);
   }
 }
 
 function handleDeleteButtonClick(event) {
-  const productCard = event.target.closest(".product-card");
+  event.preventDefault();
+  event.stopPropagation();
+
+  const productCard = event.target.closest(".product-card-admin");
   if (!productCard) return;
 
   const productName = productCard.querySelector("h3")?.textContent || "product";
@@ -101,11 +113,11 @@ function handleDeleteButtonClick(event) {
     deleteProduct("products", productId)
       .then(() => {
         modal.close();
-        location.reload(); // Reload page to show changes
+        location.reload();
       })
       .catch((error) => {
         console.error("Error deleting product:", error);
-        alert("An error occurred when deleting the product"); // Changed from Swedish to English
+        alert("An error occurred when deleting the product");
       });
   });
 

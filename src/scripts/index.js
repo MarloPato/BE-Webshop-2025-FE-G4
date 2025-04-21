@@ -9,14 +9,20 @@ import { Builder } from "../builders/builder.js";
 import { auth } from "../utils/auth.js";
 import { ProductFormBuilder } from "../builders/ProductFormBuilder.js";
 import { initProductHandlers } from "../builders/productHandlers.js";
+import { fetchUsers, buildUsersList } from "../utils/userManagement.js";
 
 document.addEventListener("DOMContentLoaded", () => {
+  if (!auth.isLoggedIn()) {
+    window.location.href = "login.html";
+    return;
+  }
+
   loadProducts();
   updateNavigation();
-  initAddProductButton();
-  initProductHandlers();
-  loadCategories();
   setupTabSwitching();
+  loadCategories();
+
+  setupUserFilter();
 });
 
 function setupTabSwitching() {
@@ -28,14 +34,25 @@ function setupTabSwitching() {
   const usersContainer = document.querySelector(".container:nth-child(2)");
   const ordersContainer = document.querySelector(".container:nth-child(3)");
 
-  // Hide all except products initially
   usersContainer.style.display = "none";
   ordersContainer.style.display = "none";
+
+  productsSideBarBtn.classList.add("active");
 
   productsSideBarBtn.addEventListener("click", () => {
     productsContainer.style.display = "block";
     usersContainer.style.display = "none";
     ordersContainer.style.display = "none";
+
+    productsSideBarBtn.classList.add("active");
+    usersSideBarBtn.classList.remove("active");
+    ordersSideBarBtn.classList.remove("active");
+
+    const modal = document.querySelector("#modal");
+    if (modal && modal.open) {
+      modal.close();
+    }
+
     loadProducts();
   });
 
@@ -43,7 +60,17 @@ function setupTabSwitching() {
     productsContainer.style.display = "none";
     usersContainer.style.display = "block";
     ordersContainer.style.display = "none";
-    // Load users function would go here
+
+    productsSideBarBtn.classList.remove("active");
+    usersSideBarBtn.classList.add("active");
+    ordersSideBarBtn.classList.remove("active");
+
+    const modal = document.querySelector("#modal");
+    if (modal && modal.open) {
+      modal.close();
+    }
+
+    loadUsers();
   });
 
   ordersSideBarBtn.addEventListener("click", async () => {
@@ -51,34 +78,301 @@ function setupTabSwitching() {
     usersContainer.style.display = "none";
     ordersContainer.style.display = "block";
 
-    // Load orders
-    const ordersDiv = document.getElementById("ordersAdmin");
-    ordersDiv.innerHTML = "<p>Loading orders...</p>";
+    productsSideBarBtn.classList.remove("active");
+    usersSideBarBtn.classList.remove("active");
+    ordersSideBarBtn.classList.add("active");
 
-    try {
-      const orders = await fetchData("orders");
-      console.log(orders);
-
-      if (orders && orders.length > 0) {
-        ordersDiv.innerHTML = "";
-        orders.forEach((order) => {
-          const orderDiv = document.createElement("div");
-          orderDiv.classList.add("order");
-          orderDiv.innerHTML = `
-            <p>Order ID: ${order._id}</p>
-            <p>Total price: ${order.totalPrice}</p>
-            <p>Status: ${order.status}</p>
-          `;
-          ordersDiv.appendChild(orderDiv);
-        });
-      } else {
-        ordersDiv.innerHTML = "<p>No orders found</p>";
-      }
-    } catch (error) {
-      console.error("Error loading orders:", error);
-      ordersDiv.innerHTML = "<p>Error loading orders</p>";
+    const modal = document.querySelector("#modal");
+    if (modal && modal.open) {
+      modal.close();
     }
+
+    loadOrders();
   });
+}
+
+function setupUserFilter() {
+  const userFilter = document.getElementById("userFilter");
+  if (userFilter) {
+    userFilter.addEventListener("change", async () => {
+      await loadUsers(userFilter.value);
+    });
+  }
+}
+
+async function loadUsers(filter = "") {
+  const usersDiv = document.getElementById("usersAdmin");
+  if (!usersDiv) return;
+
+  usersDiv.innerHTML = "<p>Loading users...</p>";
+
+  try {
+    const users = await fetchUsers();
+
+    if (!users || users.length === 0) {
+      usersDiv.innerHTML = "<p>No users found</p>";
+      return;
+    }
+
+    let filteredUsers = users;
+    if (filter === "admin") {
+      filteredUsers = users.filter((user) => user.isAdmin);
+    } else if (filter === "customer") {
+      filteredUsers = users.filter((user) => !user.isAdmin);
+    }
+
+    buildUsersList(filteredUsers, "usersAdmin");
+  } catch (error) {
+    console.error("Error loading users:", error);
+    usersDiv.innerHTML = "<p>Error loading users: " + error.message + "</p>";
+  }
+}
+
+async function loadOrders() {
+  const ordersDiv = document.getElementById("ordersAdmin");
+  if (!ordersDiv) return;
+
+  ordersDiv.innerHTML = "<p>Loading orders...</p>";
+
+  try {
+    const orders = await fetchData("orders");
+
+    if (orders && orders.length > 0) {
+      ordersDiv.innerHTML = "";
+      orders.forEach((order) => {
+        const orderDiv = document.createElement("div");
+        orderDiv.classList.add("order-item");
+        orderDiv.innerHTML = `
+          <div class="order-header">
+            <div class="order-info">
+              <h4>Order #${order._id.substring(order._id.length - 8)}</h4>
+              <span class="order-date">${new Date(
+                order.createdAt
+              ).toLocaleString()}</span>
+            </div>
+            <div class="order-status ${order.status}">${order.status}</div>
+          </div>
+          <div class="order-details">
+            <div class="customer-info">
+              <p><strong>Customer:</strong> ${order.firstname} ${
+          order.lastname
+        }</p>
+              <p><strong>Email:</strong> ${order.email}</p>
+            </div>
+            <div class="order-summary">
+              <p><strong>Total:</strong> $${order.totalPrice.toFixed(2)}</p>
+            </div>
+          </div>
+          <div class="order-actions">
+            <button class="view-order-btn" data-order-id="${
+              order._id
+            }">View Details</button>
+            <button class="update-status-btn" data-order-id="${
+              order._id
+            }">Update Status</button>
+          </div>
+        `;
+        ordersDiv.appendChild(orderDiv);
+      });
+
+      addOrderActionListeners();
+    } else {
+      ordersDiv.innerHTML = "<p>No orders found</p>";
+    }
+  } catch (error) {
+    console.error("Error loading orders:", error);
+    ordersDiv.innerHTML = "<p>Error loading orders</p>";
+  }
+}
+
+function addOrderActionListeners() {
+  document.querySelectorAll(".view-order-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const orderId = e.target.dataset.orderId;
+      viewOrderDetails(orderId);
+    });
+  });
+
+  document.querySelectorAll(".update-status-btn").forEach((btn) => {
+    btn.addEventListener("click", (e) => {
+      const orderId = e.target.dataset.orderId;
+      updateOrderStatus(orderId);
+    });
+  });
+}
+
+async function viewOrderDetails(orderId) {
+  try {
+    const order = await fetchData(`orders/${orderId}`);
+
+    const modalContent = document.querySelector("#modalContent");
+    if (!modalContent) return;
+
+    modalContent.innerHTML = "";
+
+    const orderDetailsDiv = document.createElement("div");
+    orderDetailsDiv.className = "order-details-modal";
+    orderDetailsDiv.innerHTML = `
+      <h3>Order Details</h3>
+      <div class="order-info-section">
+        <p><strong>Order ID:</strong> ${order._id}</p>
+        <p><strong>Date:</strong> ${new Date(
+          order.createdAt
+        ).toLocaleString()}</p>
+        <p><strong>Status:</strong> <span class="status-badge ${
+          order.status
+        }">${order.status}</span></p>
+      </div>
+      
+      <div class="customer-section">
+        <h4>Customer Information</h4>
+        <p><strong>Name:</strong> ${order.firstname} ${order.lastname}</p>
+        <p><strong>Email:</strong> ${order.email}</p>
+        <p><strong>Phone:</strong> ${order.phonenumber}</p>
+      </div>
+      
+      <div class="shipping-section">
+        <h4>Shipping Address</h4>
+        <p>${order.shippingAddress.street} ${order.shippingAddress.number}</p>
+        <p>${order.shippingAddress.zipCode} ${order.shippingAddress.city}</p>
+      </div>
+      
+      <div class="products-section">
+        <h4>Products</h4>
+        <div class="order-products-list">
+          ${order.products
+            .map(
+              (product) => `
+            <div class="order-product-item">
+              <div class="product-info">
+                <span class="product-name">${product.name}</span>
+                <span class="product-price">$${product.price.toFixed(2)}</span>
+              </div>
+              <span class="product-quantity">x${product.quantity}</span>
+              <span class="product-total">$${(
+                product.price * product.quantity
+              ).toFixed(2)}</span>
+            </div>
+          `
+            )
+            .join("")}
+        </div>
+      </div>
+      
+      <div class="order-total-section">
+        <p class="order-total"><strong>Total:</strong> $${order.totalPrice.toFixed(
+          2
+        )}</p>
+      </div>
+      
+      <div class="modal-actions">
+        <button id="closeDetailsBtn">Close</button>
+      </div>
+    `;
+
+    modalContent.appendChild(orderDetailsDiv);
+
+    document.getElementById("closeDetailsBtn").addEventListener("click", () => {
+      document.querySelector("#modal").close();
+    });
+
+    document.querySelector("#modal").showModal();
+  } catch (error) {
+    console.error("Error fetching order details:", error);
+    alert("Failed to load order details");
+  }
+}
+
+async function updateOrderStatus(orderId) {
+  try {
+    const order = await fetchData(`orders/${orderId}`);
+
+    const modalContent = document.querySelector("#modalContent");
+    if (!modalContent) return;
+
+    modalContent.innerHTML = "";
+
+    const statusUpdateDiv = document.createElement("div");
+    statusUpdateDiv.className = "status-update-form";
+    statusUpdateDiv.innerHTML = `
+      <h3>Update Order Status</h3>
+      <p><strong>Order ID:</strong> ${orderId}</p>
+      <p><strong>Current Status:</strong> <span class="status-badge ${
+        order.status
+      }">${order.status}</span></p>
+      
+      <form id="updateStatusForm">
+        <div class="form-group">
+          <label for="status">New Status:</label>
+          <select id="status" name="status" required>
+            <option value="received" ${
+              order.status === "received" ? "selected" : ""
+            }>Received</option>
+            <option value="processing" ${
+              order.status === "processing" ? "selected" : ""
+            }>Processing</option>
+            <option value="shipped" ${
+              order.status === "shipped" ? "selected" : ""
+            }>Shipped</option>
+            <option value="delivered" ${
+              order.status === "delivered" ? "selected" : ""
+            }>Delivered</option>
+            <option value="cancelled" ${
+              order.status === "cancelled" ? "selected" : ""
+            }>Cancelled</option>
+          </select>
+        </div>
+        
+        <div class="form-actions">
+          <button type="button" id="cancelUpdateBtn">Cancel</button>
+          <button type="submit" id="confirmUpdateBtn">Update Status</button>
+        </div>
+      </form>
+    `;
+
+    modalContent.appendChild(statusUpdateDiv);
+
+    document.getElementById("cancelUpdateBtn").addEventListener("click", () => {
+      document.querySelector("#modal").close();
+    });
+
+    document
+      .getElementById("updateStatusForm")
+      .addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const newStatus = document.getElementById("status").value;
+
+        try {
+          const token = auth.getToken();
+
+          const response = await axios({
+            method: "put",
+            url: `${getBaseUrl()}orders/${orderId}`,
+            data: { status: newStatus },
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.status === 200) {
+            document.querySelector("#modal").close();
+            loadOrders(); // Refresh orders list
+          } else {
+            throw new Error("Failed to update order status");
+          }
+        } catch (error) {
+          console.error("Error updating order status:", error);
+          alert("Failed to update order status");
+        }
+      });
+
+    document.querySelector("#modal").showModal();
+  } catch (error) {
+    console.error("Error preparing status update:", error);
+    alert("Failed to load order data");
+  }
 }
 
 const modal = document.querySelector("#modal");
@@ -91,10 +385,7 @@ function updateNavigation() {
       loginLink.textContent = "Logout";
       loginLink.href = "#";
 
-      // Remove any existing listener
       loginLink.removeEventListener("click", handleLogout);
-
-      // Add logout listener
       loginLink.addEventListener("click", handleLogout);
     } else {
       loginLink.textContent = "Login";
@@ -120,7 +411,6 @@ async function loadCategories() {
       const categoryFilter = document.getElementById("categoryFilter");
 
       if (categoryFilter) {
-        // Clear existing options except the first one
         while (categoryFilter.options.length > 1) {
           categoryFilter.remove(1);
         }
@@ -129,9 +419,11 @@ async function loadCategories() {
           const option = document.createElement("option");
           option.value = category.name;
           option.textContent =
-            category.name.charAt(0).toUpperCase() + category.name.slice(1); // Capitalize first letter
+            category.name.charAt(0).toUpperCase() + category.name.slice(1);
           categoryFilter.appendChild(option);
         });
+
+        categoryFilter.removeEventListener("change", handleCategoryFilter);
 
         categoryFilter.addEventListener("change", handleCategoryFilter);
       }
@@ -151,17 +443,12 @@ async function handleCategoryFilter() {
     let products;
 
     if (selectedCategory === "") {
-      // Empty selection = All Categories
       products = await fetchData("products");
-      console.log("All products loaded:", products);
     } else {
-      // Specific category selected
-      console.log("Filtering by category:", selectedCategory);
       const response = await axios.get(
         `${getBaseUrl()}products/bycategory?category=${selectedCategory}`
       );
       products = response.status === 200 ? response.data : [];
-      console.log("Filtered products:", products);
     }
 
     allProducts = products;
@@ -180,6 +467,8 @@ async function loadProducts() {
     const products = await fetchData("products");
     allProducts = products;
     updateProductsDisplay(products);
+
+    initAddProductButton();
   } catch (error) {
     console.error("Error fetching products:", error);
     productsContainer.innerHTML = "<p>Failed to load products.</p>";
@@ -192,11 +481,13 @@ function updateProductsDisplay(products) {
 
   if (products && products.length > 0) {
     let productBuilder = new Builder();
-    for (let x = 0; x < products.length; x++) {
-      productBuilder.buildProductCard(products[x]);
-      let productCards = productBuilder.build();
-      productsContainer.append(productCards[x]);
-    }
+
+    products.forEach((product, index) => {
+      productBuilder.buildProductCard(product);
+      const productCards = productBuilder.build();
+      productsContainer.append(productCards[index]);
+    });
+
     initProductHandlers();
   } else {
     productsContainer.innerHTML =
@@ -204,19 +495,38 @@ function updateProductsDisplay(products) {
   }
 }
 
-document.querySelector("#closeModal").addEventListener("click", () => {
-  modal.close();
-});
+if (modal) {
+  modal.addEventListener("click", function (event) {
+    if (event.target === modal) {
+      modal.close();
+    }
+  });
 
-modal.addEventListener("close", () => {
-  document.querySelector("#modalContent").innerHTML = "";
-});
+  const closeModalBtn = document.querySelector("#closeModal");
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener("click", () => {
+      modal.close();
+    });
+  }
 
-async function initAddProductButton() {
+  modal.addEventListener("close", () => {
+    const modalContent = document.querySelector("#modalContent");
+    if (modalContent) {
+      modalContent.innerHTML = "";
+    }
+  });
+}
+
+function initAddProductButton() {
   let addProductBtn = document.querySelector("#manageProductsBtn");
 
   if (addProductBtn) {
-    // Update button text to English
+    const newBtn = addProductBtn.cloneNode(true);
+    if (addProductBtn.parentNode) {
+      addProductBtn.parentNode.replaceChild(newBtn, addProductBtn);
+    }
+    addProductBtn = newBtn;
+
     addProductBtn.textContent = "Create a product";
 
     addProductBtn.addEventListener("click", async () => {

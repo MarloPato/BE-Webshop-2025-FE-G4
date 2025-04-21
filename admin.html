@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hakim Livs</title>
+  <title>Hakim Livs - Admin Dashboard</title>
   <link rel="stylesheet" href="styleAdmin.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <!-- PAGE-SPECIFIC JAVASCRIPT -->
@@ -27,6 +27,7 @@
       </ul>
     </div>
     <div class="container1">
+      <!-- Products Container -->
       <div class="container">
         <div>
           <div class="top-bar">
@@ -39,29 +40,41 @@
           <div id="productsAdmin"></div>
         </div>
       </div>
+
+      <!-- Users Container -->
       <div class="container">
         <div>
           <div class="top-bar">
             <label for="userFilter">Filter Users:</label>
             <select name="userFilter" id="userFilter">
               <option value="">All Users</option>
+              <option value="admin">Admins</option>
+              <option value="customer">Customers</option>
             </select>
           </div>
           <div id="usersAdmin"></div>
         </div>
       </div>
+
+      <!-- Orders Container -->
       <div class="container">
         <div>
           <div class="top-bar">
             <label for="orderFilter">Order Status:</label>
             <select name="orderFilter" id="orderFilter">
               <option value="">All Orders</option>
+              <option value="received">Received</option>
+              <option value="processing">Processing</option>
+              <option value="shipped">Shipped</option>
+              <option value="delivered">Delivered</option>
+              <option value="cancelled">Cancelled</option>
             </select>
           </div>
           <div id="ordersAdmin"></div>
         </div>
       </div>
     </div>
+
     <dialog id="modal">
       <button id="closeModal">X</button>
       <div id="modalContent"></div>
@@ -79,10 +92,6 @@
       </div>
     </div>
   </footer>
-  <dialog data-sidebar>
-    <button data-close-bar>X</button>
-    <section></section>
-  </dialog>
 </body>
 
 </html>
