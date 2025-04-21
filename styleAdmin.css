@@ -75,6 +75,14 @@ body {
   justify-content: space-between;
 }
 
+.category {
+  display: flex;
+  gap: 1rem;
+  border-bottom: 1px solid black;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .order {
   display: flex;
   gap: 1rem;

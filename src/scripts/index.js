@@ -101,7 +101,7 @@ async function loadCategories() {
         categoryDiv.innerHTML = `
           <h4>${category.name}</h4>
           <div>
-            <button class="edit-order-btn" id="edit-order-${category._id}">Edit</button>
+            <button class="edit-category-btn" id="edit-order-${category._id}">Edit</button>
           </div>
         `;
         categoriesDiv.appendChild(categoryDiv);})
