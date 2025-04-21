@@ -499,46 +499,134 @@ dialog > button:first-child:hover {
 
 /* Order details modal */
 .order-details-modal {
-  padding: 20px;
-}
-
-.order-details-modal h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+  padding: 20px 0;
 }
 
 .order-info-section,
 .customer-section,
 .shipping-section,
 .products-section {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
-.order-details-modal h4 {
-  margin-bottom: 10px;
-  color: #555;
+.order-summary-info {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #2196f3;
 }
 
 .status-badge {
   display: inline-block;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.85rem;
   font-weight: 500;
+  text-transform: capitalize;
 }
 
+.modal-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 25px;
+}
+
+.modal-btn {
+  padding: 10px 15px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  min-width: 100px;
+}
+
+.primary-btn {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+}
+
+.primary-btn:hover {
+  background-color: #0b7dda;
+}
+
+.status-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 12px 20px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  animation: fadeInOut 3s ease-in-out forwards;
+}
+
+.status-toast.success {
+  background-color: #4caf50;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+
+/* Status badges */
+.status-badge.received {
+  background-color: #e3f2fd;
+  color: #1565c0;
+}
+
+.status-badge.processing {
+  background-color: #fff8e1;
+  color: #ff8f00;
+}
+
+.status-badge.shipped {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.delivered {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.status-badge.cancelled {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+/* Order Products List */
 .order-products-list {
   border: 1px solid #eee;
   border-radius: 4px;
+  margin-top: 10px;
+  max-height: 300px;
+  overflow-y: auto;
 }
 
 .order-product-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 15px;
+  padding: 12px 15px;
   border-bottom: 1px solid #eee;
 }
 
@@ -546,32 +634,77 @@ dialog > button:first-child:hover {
   border-bottom: none;
 }
 
+.product-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.product-name {
+  font-weight: 500;
+}
+
+.product-price {
+  color: #666;
+  font-size: 0.9rem;
+  margin-top: 3px;
+}
+
+.product-quantity {
+  background-color: #f1f1f1;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin: 0 15px;
+  font-size: 0.9rem;
+}
+
+.product-total {
+  font-weight: 600;
+  color: #333;
+  min-width: 70px;
+  text-align: right;
+}
+
 .order-total-section {
   text-align: right;
-  margin-top: 20px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
 }
 
 .order-total {
   font-size: 18px;
-  font-weight: 600;
+  color: #333;
 }
 
-.modal-actions {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-/* Status update form */
+/* Status Update Form */
 .status-update-form {
-  padding: 20px;
+  padding: 0 0 20px 0;
 }
 
 .status-update-form h3 {
   margin-top: 0;
   margin-bottom: 20px;
-  border-bottom: 1px solid #eee;
   padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.status-update-form .form-group {
+  margin-bottom: 25px;
+}
+
+.status-update-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.status-update-form select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
 }
 
 /* Footer styling */
@@ -752,5 +885,14 @@ dialog > button:first-child:hover {
 
   .user-actions button {
     flex: 1;
+  }
+
+  .modal-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-btn {
+    width: 100%;
   }
 }

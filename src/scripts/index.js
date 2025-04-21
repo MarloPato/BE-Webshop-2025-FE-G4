@@ -11,6 +11,9 @@ import { ProductFormBuilder } from "../builders/ProductFormBuilder.js";
 import { initProductHandlers } from "../builders/productHandlers.js";
 import { fetchUsers, buildUsersList } from "../utils/userManagement.js";
 
+// Global variable to store orders data
+let ordersData = [];
+
 document.addEventListener("DOMContentLoaded", () => {
   if (!auth.isLoggedIn()) {
     window.location.href = "login.html";
@@ -137,30 +140,47 @@ async function loadOrders() {
   try {
     const orders = await fetchData("orders");
 
+    ordersData = orders || [];
+
     if (orders && orders.length > 0) {
       ordersDiv.innerHTML = "";
       orders.forEach((order) => {
+        const orderStatus = order.status || "received";
+
+        const firstname = order.firstname || "N/A";
+        const lastname = order.lastname || "N/A";
+        const email = order.email || "N/A";
+        const totalPrice = order.totalPrice || 0;
+
+        const totalItems = order.products
+          ? order.products.reduce(
+              (sum, product) => sum + (product.quantity || 1),
+              0
+            )
+          : 0;
+
+        const orderDate = order.createdAt
+          ? new Date(order.createdAt).toLocaleString()
+          : "N/A";
+
         const orderDiv = document.createElement("div");
         orderDiv.classList.add("order-item");
         orderDiv.innerHTML = `
           <div class="order-header">
             <div class="order-info">
               <h4>Order #${order._id.substring(order._id.length - 8)}</h4>
-              <span class="order-date">${new Date(
-                order.createdAt
-              ).toLocaleString()}</span>
+              <span class="order-date">${orderDate}</span>
             </div>
-            <div class="order-status ${order.status}">${order.status}</div>
+            <div class="order-status ${orderStatus}">${orderStatus}</div>
           </div>
           <div class="order-details">
             <div class="customer-info">
-              <p><strong>Customer:</strong> ${order.firstname} ${
-          order.lastname
-        }</p>
-              <p><strong>Email:</strong> ${order.email}</p>
+              <p><strong>Customer:</strong> ${firstname} ${lastname}</p>
+              <p><strong>Email:</strong> ${email}</p>
             </div>
             <div class="order-summary">
-              <p><strong>Total:</strong> $${order.totalPrice.toFixed(2)}</p>
+              <p><strong>Total:</strong> $${totalPrice.toFixed(2)}</p>
+              <p><strong>Items:</strong> ${totalItems}</p>
             </div>
           </div>
           <div class="order-actions">
@@ -201,14 +221,37 @@ function addOrderActionListeners() {
   });
 }
 
-async function viewOrderDetails(orderId) {
+function viewOrderDetails(orderId) {
   try {
-    const order = await fetchData(`orders/${orderId}`);
+    const order = ordersData.find((o) => o._id === orderId);
+
+    if (!order) {
+      throw new Error("Order not found in the loaded data");
+    }
 
     const modalContent = document.querySelector("#modalContent");
     if (!modalContent) return;
 
     modalContent.innerHTML = "";
+
+    const orderStatus = order.status || "received";
+
+    const firstname = order.firstname || "N/A";
+    const lastname = order.lastname || "N/A";
+    const email = order.email || "N/A";
+    const phonenumber = order.phonenumber || "N/A";
+
+    const shippingAddress = order.shippingAddress || {};
+    const street = shippingAddress.street || "N/A";
+    const number = shippingAddress.number || "";
+    const zipCode = shippingAddress.zipCode || "N/A";
+    const city = shippingAddress.city || "N/A";
+
+    const products = order.products || [];
+
+    const orderDate = order.createdAt
+      ? new Date(order.createdAt).toLocaleString()
+      : "N/A";
 
     const orderDetailsDiv = document.createElement("div");
     orderDetailsDiv.className = "order-details-modal";
@@ -216,41 +259,41 @@ async function viewOrderDetails(orderId) {
       <h3>Order Details</h3>
       <div class="order-info-section">
         <p><strong>Order ID:</strong> ${order._id}</p>
-        <p><strong>Date:</strong> ${new Date(
-          order.createdAt
-        ).toLocaleString()}</p>
-        <p><strong>Status:</strong> <span class="status-badge ${
-          order.status
-        }">${order.status}</span></p>
+        <p><strong>Date:</strong> ${orderDate}</p>
+        <p><strong>Status:</strong> <span class="status-badge ${orderStatus}">${orderStatus}</span></p>
       </div>
       
       <div class="customer-section">
         <h4>Customer Information</h4>
-        <p><strong>Name:</strong> ${order.firstname} ${order.lastname}</p>
-        <p><strong>Email:</strong> ${order.email}</p>
-        <p><strong>Phone:</strong> ${order.phonenumber}</p>
+        <p><strong>Name:</strong> ${firstname} ${lastname}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <p><strong>Phone:</strong> ${phonenumber}</p>
       </div>
       
       <div class="shipping-section">
         <h4>Shipping Address</h4>
-        <p>${order.shippingAddress.street} ${order.shippingAddress.number}</p>
-        <p>${order.shippingAddress.zipCode} ${order.shippingAddress.city}</p>
+        <p>${street} ${number}</p>
+        <p>${zipCode} ${city}</p>
       </div>
       
       <div class="products-section">
         <h4>Products</h4>
         <div class="order-products-list">
-          ${order.products
+          ${products
             .map(
               (product) => `
             <div class="order-product-item">
               <div class="product-info">
-                <span class="product-name">${product.name}</span>
-                <span class="product-price">$${product.price.toFixed(2)}</span>
+                <span class="product-name">${
+                  product.name || "Unknown Product"
+                }</span>
+                <span class="product-price">$${(product.price || 0).toFixed(
+                  2
+                )}</span>
               </div>
-              <span class="product-quantity">x${product.quantity}</span>
+              <span class="product-quantity">x${product.quantity || 1}</span>
               <span class="product-total">$${(
-                product.price * product.quantity
+                (product.price || 0) * (product.quantity || 1)
               ).toFixed(2)}</span>
             </div>
           `
@@ -260,13 +303,16 @@ async function viewOrderDetails(orderId) {
       </div>
       
       <div class="order-total-section">
-        <p class="order-total"><strong>Total:</strong> $${order.totalPrice.toFixed(
-          2
-        )}</p>
+        <p class="order-total"><strong>Total:</strong> $${(
+          order.totalPrice || 0
+        ).toFixed(2)}</p>
       </div>
       
       <div class="modal-actions">
-        <button id="closeDetailsBtn">Close</button>
+        <button id="closeDetailsBtn" class="modal-btn">Close</button>
+        <button id="editStatusBtn" class="modal-btn primary-btn" data-order-id="${
+          order._id
+        }">Update Status</button>
       </div>
     `;
 
@@ -276,49 +322,71 @@ async function viewOrderDetails(orderId) {
       document.querySelector("#modal").close();
     });
 
+    document.getElementById("editStatusBtn").addEventListener("click", () => {
+      document.querySelector("#modal").close();
+      updateOrderStatus(order._id);
+    });
+
     document.querySelector("#modal").showModal();
   } catch (error) {
-    console.error("Error fetching order details:", error);
-    alert("Failed to load order details");
+    console.error("Error displaying order details:", error);
+    alert("Failed to load order details. " + error.message);
   }
 }
 
-async function updateOrderStatus(orderId) {
+function updateOrderStatus(orderId) {
   try {
-    const order = await fetchData(`orders/${orderId}`);
+    const order = ordersData.find((o) => o._id === orderId);
+
+    if (!order) {
+      throw new Error("Order not found in the loaded data");
+    }
+
+    console.log("Order for status update from stored data:", order); // Debugging log
 
     const modalContent = document.querySelector("#modalContent");
     if (!modalContent) return;
 
     modalContent.innerHTML = "";
 
+    const currentStatus = order.status || "received";
+
+    const firstname = order.firstname || "N/A";
+    const lastname = order.lastname || "N/A";
+
+    const orderDate = order.createdAt
+      ? new Date(order.createdAt).toLocaleString()
+      : "N/A";
+
     const statusUpdateDiv = document.createElement("div");
     statusUpdateDiv.className = "status-update-form";
     statusUpdateDiv.innerHTML = `
       <h3>Update Order Status</h3>
-      <p><strong>Order ID:</strong> ${orderId}</p>
-      <p><strong>Current Status:</strong> <span class="status-badge ${
-        order.status
-      }">${order.status}</span></p>
+      <div class="order-summary-info">
+        <p><strong>Order ID:</strong> ${orderId}</p>
+        <p><strong>Customer:</strong> ${firstname} ${lastname}</p>
+        <p><strong>Order Date:</strong> ${orderDate}</p>
+        <p><strong>Current Status:</strong> <span class="status-badge ${currentStatus}">${currentStatus}</span></p>
+      </div>
       
       <form id="updateStatusForm">
         <div class="form-group">
           <label for="status">New Status:</label>
           <select id="status" name="status" required>
             <option value="received" ${
-              order.status === "received" ? "selected" : ""
+              currentStatus === "received" ? "selected" : ""
             }>Received</option>
             <option value="processing" ${
-              order.status === "processing" ? "selected" : ""
+              currentStatus === "processing" ? "selected" : ""
             }>Processing</option>
             <option value="shipped" ${
-              order.status === "shipped" ? "selected" : ""
+              currentStatus === "shipped" ? "selected" : ""
             }>Shipped</option>
             <option value="delivered" ${
-              order.status === "delivered" ? "selected" : ""
+              currentStatus === "delivered" ? "selected" : ""
             }>Delivered</option>
             <option value="cancelled" ${
-              order.status === "cancelled" ? "selected" : ""
+              currentStatus === "cancelled" ? "selected" : ""
             }>Cancelled</option>
           </select>
         </div>
@@ -357,7 +425,24 @@ async function updateOrderStatus(orderId) {
           });
 
           if (response.status === 200) {
+            const updatedOrderIndex = ordersData.findIndex(
+              (o) => o._id === orderId
+            );
+            if (updatedOrderIndex !== -1) {
+              ordersData[updatedOrderIndex].status = newStatus;
+            }
+
             document.querySelector("#modal").close();
+
+            const successToast = document.createElement("div");
+            successToast.className = "status-toast success";
+            successToast.textContent = `Order status updated to "${newStatus}"`;
+            document.body.appendChild(successToast);
+
+            setTimeout(() => {
+              successToast.remove();
+            }, 3000);
+
             loadOrders(); // Refresh orders list
           } else {
             throw new Error("Failed to update order status");
@@ -371,7 +456,7 @@ async function updateOrderStatus(orderId) {
     document.querySelector("#modal").showModal();
   } catch (error) {
     console.error("Error preparing status update:", error);
-    alert("Failed to load order data");
+    alert("Failed to load order data. " + error.message);
   }
 }
 
