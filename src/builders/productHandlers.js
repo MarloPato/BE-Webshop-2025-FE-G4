@@ -15,8 +15,88 @@ export function initProductHandlers() {
     if (event.target && event.target.classList.contains("edit-order-btn")) {
       editOrders(event);
     }
-    
+
+    if (event.target && event.target.classList.contains("edit-category-btn")) {
+      editCategories(event);
+    }
   });
+}
+
+async function editCategories(event) {
+  const modal = document.querySelector("#modal");
+  const modalContent = document.querySelector("#modalContent");
+
+  if (!modal || !modalContent) {
+    console.error("Modal-element saknas");
+    return;
+  }
+
+  // Töm modalinnehållet först
+  modalContent.innerHTML = "";
+
+  const category = event.target.closest(".category");
+  if (!category || !category.id) {
+    console.error("Kategori eller kategori-ID saknas");
+    return;
+  }
+
+  console.log("Kategori ID:", category.id);
+
+  // Skapa label och select-element
+  const label = document.createElement("label");
+  label.setAttribute("for", "categoryName");
+  label.textContent = "Category Name:";
+
+  const input = document.createElement("input");
+  input.id = "categoryName";
+  input.name = "categoryName";
+  input.type = "text";
+
+  // Skapa Update-knappen
+  const updateBtn = document.createElement("button");
+  updateBtn.id = "updateCategoryBtn";
+  updateBtn.textContent = "Update Category";
+  updateBtn.addEventListener("click", async () => {
+    const selectedCategoryName = input.value;
+    try {
+      const response = await fetch(`${getBaseUrl()}categories/${category.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.getToken()}`,
+        },
+        body: JSON.stringify({ name: selectedCategoryName }),
+      });
+
+      if (response.ok) {
+        const updatedCategory = await response.json();
+        console.log("Category updated:", updatedCategory);
+        modal.close();
+        location.reload();
+      } else {
+        console.error("Failed to update category:", response.statusText);
+        alert("Failed to update category");
+      }
+    } catch (error) {
+      console.error("Error updating category:", error);
+      alert("Error updating category");
+    }
+  });
+
+  // Skapa Cancel-knappen
+  const cancelBtn = document.createElement("button");
+  cancelBtn.id = "cancelCategoryBtn";
+  cancelBtn.textContent = "Cancel";
+  cancelBtn.addEventListener("click", () => {
+    modal.close();
+  });
+
+  // Lägg till alla element i modalinnehållet
+  modalContent.appendChild(label);
+  modalContent.appendChild(input);
+  modalContent.appendChild(updateBtn);
+  modalContent.appendChild(cancelBtn);
+  
 }
 
 async function editOrders(event) {
