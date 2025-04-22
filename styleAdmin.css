@@ -163,9 +163,13 @@ button {
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
+  color: white;
+  background-color: #4caf50;
   transition: background-color 0.2s ease;
 }
-
+button:hover {
+  background-color: #45a049;
+}
 .edit-product-btn,
 .edit-user-btn,
 .view-order-btn {
@@ -191,12 +195,12 @@ button {
 }
 
 .update-status-btn {
-  background-color: #ff9800;
+  background-color: #4caf50;
   color: white;
 }
 
 .update-status-btn:hover {
-  background-color: #f57c00;
+  background-color: #45a049;
 }
 
 #productsAdmin,

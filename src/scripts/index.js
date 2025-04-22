@@ -175,16 +175,11 @@ function showCreateCategoryModal() {
     </div>
     
     <div class="form-actions">
-      <button id="cancelCreateBtn" type="button">Cancel</button>
       <button id="createCategoryConfirmBtn" type="button">Create Category</button>
     </div>
   `;
 
   modalContent.appendChild(createForm);
-
-  document.getElementById("cancelCreateBtn").addEventListener("click", () => {
-    modal.close();
-  });
 
   document
     .getElementById("createCategoryConfirmBtn")
@@ -521,17 +516,12 @@ function updateOrderStatus(orderId) {
         </div>
         
         <div class="form-actions">
-          <button type="button" id="cancelUpdateBtn">Cancel</button>
           <button type="submit" id="confirmUpdateBtn">Update Status</button>
         </div>
       </form>
     `;
 
     modalContent.appendChild(statusUpdateDiv);
-
-    document.getElementById("cancelUpdateBtn").addEventListener("click", () => {
-      document.querySelector("#modal").close();
-    });
 
     document
       .getElementById("updateStatusForm")
