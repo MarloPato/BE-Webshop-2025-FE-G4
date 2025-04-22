@@ -32,7 +32,6 @@ body {
   width: 100%;
 }
 
-/* Sidebar styling - fixed width and full height */
 .sidebar {
   position: fixed;
   top: 0;
@@ -86,7 +85,6 @@ body {
   padding: 0 !important;
 }
 
-/* Enhanced logout button */
 .nav-links a {
   display: block;
   width: 100%;
@@ -108,7 +106,6 @@ body {
   transform: translateY(-2px);
 }
 
-/* Main content area - shifted to align with sidebar */
 .container1 {
   margin-left: 250px;
   padding: 20px;
@@ -124,7 +121,6 @@ body {
   overflow: hidden;
 }
 
-/* Top bar styling */
 .top-bar {
   display: flex;
   align-items: center;
@@ -161,7 +157,6 @@ body {
   background-color: #45a049;
 }
 
-/* Common button styles */
 button {
   padding: 8px 12px;
   border: none;
@@ -204,7 +199,6 @@ button {
   background-color: #f57c00;
 }
 
-/* Product cards styling */
 #productsAdmin,
 #usersAdmin,
 #ordersAdmin {
@@ -234,7 +228,6 @@ button {
   gap: 10px;
 }
 
-/* Order styling - preserving original order style */
 .order {
   display: flex;
   gap: 1rem;
@@ -246,7 +239,6 @@ button {
   margin: 5px 10px 5px 0;
 }
 
-/* User item styling - FIXED */
 .user-item {
   display: flex;
   justify-content: space-between;
@@ -264,7 +256,7 @@ button {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  width: 70%; /* Fixed width for user info section */
+  width: 70%;
 }
 
 .user-name {
@@ -275,14 +267,13 @@ button {
 .user-email {
   color: #666;
   font-size: 14px;
-  word-break: break-word; /* Handle long emails properly */
+  word-break: break-word;
 }
 
-/* Fixed badge styling */
 .user-status {
   display: inline-block;
-  width: fit-content; /* Make the badge width fit its content */
-  min-width: 80px; /* Minimum width */
+  width: fit-content;
+  min-width: 80px;
   text-align: center;
   padding: 3px 8px;
   border-radius: 12px;
@@ -304,16 +295,14 @@ button {
 .user-actions {
   display: flex;
   gap: 10px;
-  min-width: 140px; /* Fixed width for action buttons */
+  min-width: 140px;
   justify-content: flex-end;
 }
 
-/* Hide user management title */
 .user-list-header {
   display: none;
 }
 
-/* User Edit Form */
 .user-edit-form {
   padding: 20px;
 }
@@ -351,7 +340,6 @@ button {
   margin-top: 20px;
 }
 
-/* Modal dialog styling */
 dialog {
   padding: 30px;
   border: none;
@@ -380,7 +368,6 @@ dialog > button:first-child:hover {
   color: #333;
 }
 
-/* Form styling */
 #createProduct {
   display: flex;
   flex-direction: column;
@@ -435,7 +422,6 @@ dialog > button:first-child:hover {
   background-color: #45a049;
 }
 
-/* Delete confirmation dialog */
 .delete-confirmation {
   text-align: center;
 }
@@ -497,7 +483,6 @@ dialog > button:first-child:hover {
   background-color: #45a049;
 }
 
-/* Order details modal */
 .order-details-modal {
   padding: 20px 0;
 }
@@ -587,7 +572,6 @@ dialog > button:first-child:hover {
   }
 }
 
-/* Status badges */
 .status-badge.received {
   background-color: #e3f2fd;
   color: #1565c0;
@@ -613,7 +597,6 @@ dialog > button:first-child:hover {
   color: #c62828;
 }
 
-/* Order Products List */
 .order-products-list {
   border: 1px solid #eee;
   border-radius: 4px;
@@ -677,7 +660,6 @@ dialog > button:first-child:hover {
   color: #333;
 }
 
-/* Status Update Form */
 .status-update-form {
   padding: 0 0 20px 0;
 }

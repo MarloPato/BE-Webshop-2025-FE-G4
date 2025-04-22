@@ -1,7 +1,6 @@
 import { getBaseUrl } from "./api.js";
 import { auth } from "./auth.js";
 
-// Function to fetch all users
 export async function fetchUsers() {
   try {
     const token = auth.getToken();
@@ -26,7 +25,6 @@ export async function fetchUsers() {
   }
 }
 
-// Function to update user admin status
 export async function updateUserAdminStatus(userId, isAdmin) {
   try {
     const token = auth.getToken();
@@ -56,7 +54,6 @@ export async function updateUserAdminStatus(userId, isAdmin) {
   }
 }
 
-// Function to delete a user
 export async function deleteUser(userId) {
   try {
     const token = auth.getToken();
@@ -81,7 +78,6 @@ export async function deleteUser(userId) {
   }
 }
 
-// Function to build the users display
 export function buildUsersList(users, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -169,17 +165,11 @@ async function handleEditUser(event) {
     </div>
     
     <div class="form-actions">
-      <button id="cancelEditBtn" type="button">Cancel</button>
       <button id="saveUserBtn" type="button">Save Changes</button>
     </div>
   `;
 
   modalContent.appendChild(editForm);
-
-  // Add event listeners
-  document.getElementById("cancelEditBtn").addEventListener("click", () => {
-    modal.close();
-  });
 
   document.getElementById("saveUserBtn").addEventListener("click", async () => {
     const newIsAdmin = document.getElementById("isAdmin").value === "true";
@@ -188,7 +178,6 @@ async function handleEditUser(event) {
       await updateUserAdminStatus(userId, newIsAdmin);
       modal.close();
 
-      // Refresh the users list
       const users = await fetchUsers();
       buildUsersList(users, "usersAdmin");
     } catch (error) {

@@ -72,15 +72,11 @@ async function loadCategories() {
           categoryButtonsContainer.appendChild(categoryBtn);
         });
 
-        // Add event listeners to the category buttons
         const categoryButtons = document.querySelectorAll(".category-btn");
         categoryButtons.forEach((btn) => {
           btn.addEventListener("click", () => {
-            // Remove active class from all buttons
             categoryButtons.forEach((b) => b.classList.remove("active"));
-            // Add active class to clicked button
             btn.classList.add("active");
-            // Filter products
             filterProductsByCategory(btn.dataset.category);
           });
         });
@@ -99,11 +95,9 @@ async function filterProductsByCategory(category) {
     let products;
 
     if (!category) {
-      // Empty selection = All Categories
       products = await fetchData("products");
       console.log("All products loaded:", products);
     } else {
-      // Specific category selected
       console.log("Filtering by category:", category);
       const response = await axios.get(
         `${getBaseUrl()}products/bycategory?category=${category}`
@@ -211,18 +205,15 @@ const openCart = (parentElement, userCart) => {
     });
   }
 
-  // Add event listeners for the increment buttons
   const incrementButtons = parentElement.querySelectorAll(".increment-btn");
   incrementButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const productId = button.dataset.productId;
       const product = allProducts.find((p) => p._id === productId);
 
-      // If product is in allProducts, add it to cart
       if (product) {
         cart.addItem(product);
       } else {
-        // Otherwise, use the first item in cart with this productId (for consistency)
         const existingItem = cart.items.find(
           (item) => item._id === productId || item.productId === productId
         );
@@ -233,36 +224,30 @@ const openCart = (parentElement, userCart) => {
 
       cart.updateCart();
       LocalStorage.saveToStorage(CART_KEY, product || existingItem);
-      openCart(parentElement, cart); // Refresh the cart UI
+      openCart(parentElement, cart);
     });
   });
 
-  // Add event listeners for the decrement buttons
   const decrementButtons = parentElement.querySelectorAll(".decrement-btn");
   decrementButtons.forEach((button) => {
     button.addEventListener("click", () => {
       const productId = button.dataset.productId;
 
-      // Remove one item with this product ID
       cart.decrementItem(productId);
       cart.updateCart();
 
-      // Update localStorage
       const cartItems = LocalStorage.getStorageAsJSON(CART_KEY) || [];
       const updatedItems = [...cartItems];
 
-      // Find the index of the first item with this productId
       const indexToRemove = updatedItems.findIndex(
         (item) => item._id === productId || item.productId === productId
       );
 
       if (indexToRemove !== -1) {
-        // Remove only one instance
         updatedItems.splice(indexToRemove, 1);
         localStorage.setItem(CART_KEY, JSON.stringify(updatedItems));
       }
-
-      openCart(parentElement, cart); // Refresh the cart UI
+      openCart(parentElement, cart);
     });
   });
 };
@@ -300,7 +285,6 @@ modal.addEventListener("close", () => {
   document.querySelector("#modalContent").innerHTML = "";
 });
 
-// Order form handling
 const proceedBtn = document.querySelector(".proceed-btn");
 const orderForm = document.querySelector(".order-form");
 const backtoCartBtn = document.querySelector(".back-to-cart-btn");
@@ -327,7 +311,6 @@ if (order) {
     const formData = new FormData(order);
     const data = Object.fromEntries(formData.entries());
 
-    // Map form fields to the model
     const shippingAddress = {
       street: data.address,
       number: data.addressnumber,
@@ -335,7 +318,6 @@ if (order) {
       city: data.city,
     };
 
-    // Get and restructure cart from localStorage
     const rawCart = JSON.parse(localStorage.getItem("products")) || [];
     const products = rawCart.map((item) => ({
       productId: item._id || item.productId,
@@ -373,7 +355,6 @@ if (order) {
       console.log("Order sent:", result);
       showToast("Thank you for your order!");
 
-      // Clear form and cart
       order.reset();
       localStorage.removeItem("products");
       cart.clearCart();

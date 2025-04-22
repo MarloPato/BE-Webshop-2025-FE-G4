@@ -67,7 +67,7 @@ export class ProductFormBuilder {
 
     const defaultOption = document.createElement("option");
     defaultOption.value = "";
-    defaultOption.textContent = "Select category"; // Changed from Swedish to English
+    defaultOption.textContent = "Select category";
     select.append(defaultOption);
 
     try {
@@ -109,7 +109,6 @@ export class ProductFormBuilder {
     this.form.querySelector("#stock").value = product.stock || 0;
     this.form.querySelector("#imageUrl").value = product.imageUrl || "";
 
-    // Set category value if product has category
     const categorySelect = this.form.querySelector("#category");
     if (categorySelect && product.category) {
       const categoryId =
@@ -119,13 +118,11 @@ export class ProductFormBuilder {
       categorySelect.value = categoryId;
     }
 
-    // Change button text
     const submitBtn = this.form.querySelector("#createProductBtn");
     if (submitBtn) {
       submitBtn.textContent = "Update product"; // Changed from Swedish to English
     }
 
-    // Store product ID for update
     this.form.dataset.productId = product._id || "";
     console.log("Set product ID in form dataset:", this.form.dataset.productId);
 
@@ -136,7 +133,6 @@ export class ProductFormBuilder {
     console.log("Form submitted, dataset:", this.form.dataset);
 
     try {
-      // Get form data
       const name = this.form.querySelector("#name").value;
       const price = parseFloat(this.form.querySelector("#price").value);
       const description = this.form.querySelector("#description").value;
@@ -146,7 +142,6 @@ export class ProductFormBuilder {
         this.form.querySelector("#imageUrl").value ||
         "https://picsum.photos/200";
 
-      // Create product object
       const productData = {
         name,
         price,
@@ -158,20 +153,17 @@ export class ProductFormBuilder {
 
       console.log("Product data to submit:", productData);
 
-      // Get the token
       const token = auth.getToken();
       if (!token) {
         throw new Error("You must be logged in to perform this action");
       }
 
-      // Get product ID if updating
       const productId = this.form.dataset.productId;
       console.log("Product ID for update:", productId);
 
       let response;
 
       if (productId) {
-        // Updating existing product
         console.log("Updating product with ID:", productId);
         const url = `${getBaseUrl()}products/${productId}`;
 
@@ -185,7 +177,6 @@ export class ProductFormBuilder {
           },
         });
       } else {
-        // Creating new product
         console.log("Creating new product");
         const url = `${getBaseUrl()}products`;
 
@@ -202,20 +193,17 @@ export class ProductFormBuilder {
 
       console.log("API response:", response);
 
-      // Success - close modal and reload
       const modal = document.querySelector("#modal");
       if (modal) {
         modal.close();
       }
 
-      // Reload the page to show updated products
       window.location.reload();
     } catch (error) {
       console.error("Error saving product:", error);
 
       let errorMessage = "An error occurred when saving the product"; // Changed from Swedish to English
 
-      // Get more detailed error info if available
       if (error.response && error.response.data) {
         errorMessage += ": " + (error.response.data.error || error.message);
       } else if (error.message) {
@@ -256,7 +244,7 @@ export function initAddProductButton() {
 
         productForm
           .addTextField("imageUrl", "Image URL:")
-          .addButton("createProductBtn", "Add product") // Changed from Swedish to English
+          .addButton("createProductBtn", "Add product")
           .render();
 
         const modal = document.querySelector("#modal");

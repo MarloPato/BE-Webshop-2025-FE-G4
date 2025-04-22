@@ -17,10 +17,8 @@ async function handleLogin() {
   let errorMessage = document.querySelector("#error-message");
   errorMessage.textContent = "";
 
-  if(username.classList.contains("error")) 
-    username.classList.remove("error");
-  if(password.classList.contains("error")) 
-    password.classList.remove("error");
+  if (username.classList.contains("error")) username.classList.remove("error");
+  if (password.classList.contains("error")) password.classList.remove("error");
 
   let usernameValue = username.value;
   let passwordValue = password.value;
@@ -30,17 +28,13 @@ async function handleLogin() {
     username.classList.add("error");
     password.classList.add("error");
     errorMessage.textContent = "Incorrect username or password";
-  }
-  else {
+  } else {
     username.classList.add("success");
     password.classList.add("success");
     auth.saveToken(response.data.token);
-    //TODO Go to Admin-page or go to User page
-    console.log(response);
-    if(response.data.user.isAdmin) {
+    if (response.data.user.isAdmin) {
       window.location.href = "admin.html";
-    }
-    else {
+    } else {
       window.location.href = "index.html";
     }
   }

@@ -29,9 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
   updateNavigation();
   setupTabSwitching();
   loadCategories();
-
   setupUserFilter();
   setupCreateCategoryButton();
+  setupOrderFilter();
 });
 
 function setupTabSwitching() {
@@ -137,6 +137,16 @@ function setupUserFilter() {
   }
 }
 
+function setupOrderFilter() {
+  const orderFilter = document.getElementById("orderFilter");
+  if (orderFilter) {
+    orderFilter.addEventListener("change", () => {
+      const selectedStatus = orderFilter.value;
+      loadOrders(selectedStatus);
+    });
+  }
+}
+
 function setupCreateCategoryButton() {
   const createCategoryBtn = document.getElementById("createCategoryBtn");
   if (createCategoryBtn) {
@@ -190,7 +200,6 @@ function showCreateCategoryModal() {
         await createCategory({ name: categoryName });
         modal.close();
 
-        // Refresh the categories list
         loadCategoriesForManagement();
       } catch (error) {
         let errorMessage = "Failed to create category";
@@ -256,7 +265,7 @@ async function loadCategoriesForManagement() {
   }
 }
 
-async function loadOrders() {
+async function loadOrders(statusFilter = "") {
   const ordersDiv = document.getElementById("ordersAdmin");
   if (!ordersDiv) return;
 
@@ -268,8 +277,23 @@ async function loadOrders() {
     ordersData = orders || [];
 
     if (orders && orders.length > 0) {
+      let filteredOrders = orders;
+      if (statusFilter) {
+        filteredOrders = orders.filter(
+          (order) =>
+            (order.status || "received").toLowerCase() ===
+            statusFilter.toLowerCase()
+        );
+      }
+
       ordersDiv.innerHTML = "";
-      orders.forEach((order) => {
+
+      if (filteredOrders.length === 0) {
+        ordersDiv.innerHTML = `<p>No orders found with status: ${statusFilter}</p>`;
+        return;
+      }
+
+      filteredOrders.forEach((order) => {
         const orderStatus = order.status || "received";
 
         const firstname = order.firstname || "N/A";
@@ -345,7 +369,6 @@ function addOrderActionListeners() {
     });
   });
 }
-
 function viewOrderDetails(orderId) {
   try {
     const order = ordersData.find((o) => o._id === orderId);
@@ -432,26 +455,9 @@ function viewOrderDetails(orderId) {
           order.totalPrice || 0
         ).toFixed(2)}</p>
       </div>
-      
-      <div class="modal-actions">
-        <button id="closeDetailsBtn" class="modal-btn">Close</button>
-        <button id="editStatusBtn" class="modal-btn primary-btn" data-order-id="${
-          order._id
-        }">Update Status</button>
-      </div>
     `;
 
     modalContent.appendChild(orderDetailsDiv);
-
-    document.getElementById("closeDetailsBtn").addEventListener("click", () => {
-      document.querySelector("#modal").close();
-    });
-
-    document.getElementById("editStatusBtn").addEventListener("click", () => {
-      document.querySelector("#modal").close();
-      updateOrderStatus(order._id);
-    });
-
     document.querySelector("#modal").showModal();
   } catch (error) {
     console.error("Error displaying order details:", error);
@@ -466,8 +472,6 @@ function updateOrderStatus(orderId) {
     if (!order) {
       throw new Error("Order not found in the loaded data");
     }
-
-    console.log("Order for status update from stored data:", order); // Debugging log
 
     const modalContent = document.querySelector("#modalContent");
     if (!modalContent) return;
@@ -568,7 +572,10 @@ function updateOrderStatus(orderId) {
               successToast.remove();
             }, 3000);
 
-            loadOrders(); // Refresh orders list
+            const orderFilter = document.getElementById("orderFilter");
+            const currentFilter = orderFilter ? orderFilter.value : "";
+
+            loadOrders(currentFilter);
           } else {
             throw new Error("Failed to update order status");
           }

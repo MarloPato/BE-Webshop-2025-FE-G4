@@ -69,7 +69,7 @@ export class Builder {
     let div = document.createElement("div");
     div.append(h4, ul, total);
     if (cart.items.length > 0) {
-      let clearButton = this.buildBtn("Töm varukorg", "clear-cart-btn");
+      let clearButton = this.buildBtn("Clear cart", "clear-cart-btn");
       div.appendChild(clearButton);
     }
 

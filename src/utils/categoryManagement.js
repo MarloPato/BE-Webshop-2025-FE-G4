@@ -195,7 +195,6 @@ async function handleEditCategory(event) {
         await updateCategory(categoryId, { name: newName });
         modal.close();
 
-        // Refresh the categories list
         const categories = await fetchCategories();
         buildCategoriesList(categories, "categoriesAdmin");
       } catch (error) {
