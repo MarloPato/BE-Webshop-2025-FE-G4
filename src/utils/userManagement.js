@@ -221,16 +221,11 @@ async function handleDeleteUser(event) {
     <p>This action cannot be undone.</p>
     
     <div class="confirmation-buttons">
-      <button id="cancelDeleteBtn">Cancel</button>
-      <button id="confirmDeleteBtn">Delete User</button>
+      <button id="confirmDeleteBtn">Delete</button>
     </div>
   `;
 
   modalContent.appendChild(confirmDialog);
-
-  document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
-    modal.close();
-  });
 
   document
     .getElementById("confirmDeleteBtn")

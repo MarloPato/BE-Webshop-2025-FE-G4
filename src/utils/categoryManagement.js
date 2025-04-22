@@ -1,7 +1,6 @@
 import { getBaseUrl } from "./api.js";
 import { auth } from "./auth.js";
 
-// Function to fetch all categories
 export async function fetchCategories() {
   try {
     const response = await axios.get(`${getBaseUrl()}categories`);
@@ -16,7 +15,6 @@ export async function fetchCategories() {
   }
 }
 
-// Function to update a category
 export async function updateCategory(categoryId, categoryData) {
   try {
     const token = auth.getToken();
@@ -46,7 +44,6 @@ export async function updateCategory(categoryId, categoryData) {
   }
 }
 
-// Function to delete a category
 export async function deleteCategory(categoryId) {
   try {
     const token = auth.getToken();
@@ -74,7 +71,6 @@ export async function deleteCategory(categoryId) {
   }
 }
 
-// Function to create a new category
 export async function createCategory(categoryData) {
   try {
     const token = auth.getToken();
@@ -104,7 +100,6 @@ export async function createCategory(categoryData) {
   }
 }
 
-// Function to build the categories list
 export function buildCategoriesList(categories, containerId) {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -242,16 +237,11 @@ async function handleDeleteCategory(event) {
     <p>This action cannot be undone. Products in this category may be affected.</p>
     
     <div class="confirmation-buttons">
-      <button id="cancelDeleteBtn">Cancel</button>
-      <button id="confirmDeleteBtn">Delete Category</button>
+      <button id="confirmDeleteBtn">Delete</button>
     </div>
   `;
 
   modalContent.appendChild(confirmDialog);
-
-  document.getElementById("cancelDeleteBtn").addEventListener("click", () => {
-    modal.close();
-  });
 
   document
     .getElementById("confirmDeleteBtn")

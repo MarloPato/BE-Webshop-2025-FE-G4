@@ -98,16 +98,11 @@ function handleDeleteButtonClick(event) {
       <h2>Delete Product</h2>
       <p>Are you sure you want to delete the product "${productName}"?</p>
       <div class="confirmation-buttons">
-        <button id="cancelDeleteBtn">No, cancel</button>
-        <button id="confirmDeleteBtn">Yes, delete</button>
+        <button id="confirmDeleteBtn">Delete</button>
       </div>
     `;
 
   modalContent.appendChild(confirmationDiv);
-
-  document.getElementById("cancelDeleteBtn")?.addEventListener("click", () => {
-    modal.close();
-  });
 
   document.getElementById("confirmDeleteBtn")?.addEventListener("click", () => {
     deleteProduct("products", productId)
